@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Пернатый Бизнес</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 10px 0;
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 { font-size: 24px; margin: 10px 0; }
+        .balance { font-size: 32px; font-weight: bold; color: #ffd700; }
+        .bird { font-size: 60px; margin: 15px 0; cursor: pointer; transition: transform 0.1s; }
+        .bird:active { transform: scale(1.2); }
+        .btn {
+            background: #ffd700;
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 8px;
+            width: 80%;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-ad { background: #4CAF50; color: white; }
+        .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🐔 Пернатый Бизнес</h1>
+        <div class="balance" id="balance">0 суеты</div>
+        <div style="font-size: 14px; color: #aaa;" id="income">Доход: 0/час</div>
+    </div>
+
+    <div class="card">
+        <div class="bird" id="bird" onclick="tapBird()">🐔</div>
+        <div id="bird-name">Курица</div>
+    </div>
+
+    <div class="card">
+        <button class="btn btn-ad" onclick="watchAd()">📺 Смотреть рекламу (+100)</button>
+        <button class="btn" onclick="buyBird()">🛒 Купить курицу (100)</button>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Данные игрока (в реальной версии будут приходить из бота)
+        let userData = {
+            balance: 100,
+            birds: { chicken: 0, duck: 0, goose: 0 },
+            incomePerHour: 0
+        };
+
+        // Функция обновления интерфейса
+        function updateUI() {
+            document.getElementById('balance').textContent = userData.balance + ' суеты';
+            document.getElementById('income').textContent = 'Доход: ' + userData.incomePerHour + '/час';
+        }
+
+        // Клик по птице (для теста)
+        function tapBird() {
+            userData.balance += 1;
+            updateUI();
+            // Отправляем данные боту
+            sendToBot('tap');
+        }
+
+        // Покупка птицы
+        function buyBird() {
+            if (userData.balance >= 100) {
+                userData.balance -= 100;
+                userData.birds.chicken += 1;
+                userData.incomePerHour += 10;
+                updateUI();
+                sendToBot('buy_chicken');
+            } else {
+                tg.showAlert('Недостаточно суеты!');
+            }
+        }
+
+        // Просмотр рекламы (пока заглушка)
+        function watchAd() {
+            // TODO: Здесь будет интеграция Adsgram
+            tg.showAlert('Здесь будет реклама Adsgram! +100 суеты');
+            userData.balance += 100;
+            updateUI();
+            sendToBot('ad_reward');
+        }
+
+        // Отправка данных в бота
+        function sendToBot(action) {
+            const data = {
+                action: action,
+                userId: tg.initDataUnsafe?.user?.id,
+                balance: userData.balance
+            };
+            // В реальной версии здесь будет fetch к вашему боту
+            console.log('Отправка в бот:', data);
+        }
+
+        // Показываем данные пользователя
+        if (tg.initDataUnsafe?.user) {
+            console.log('Игрок:', tg.initDataUnsafe.user.first_name);
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
