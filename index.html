@@ -51,6 +51,7 @@
         .btn-ad { background: #4CAF50; color: white; }
         .btn:disabled { opacity: 0.6; }
         .status { font-size: 13px; color: #aaa; margin-top: 10px; min-height: 18px; }
+        .birds-info { font-size: 13px; color: #ccc; margin-top: 8px; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -58,6 +59,7 @@
         <h1>🐔 Пернатый Бизнес</h1>
         <div class="balance" id="balance">0 суеты</div>
         <div style="font-size: 14px; color: #aaa;" id="income">Доход: 0/час</div>
+        <div class="birds-info" id="birds-info"></div>
     </div>
 
     <div class="card">
@@ -67,7 +69,9 @@
 
     <div class="card">
         <button class="btn btn-ad" id="adBtn" onclick="watchAd()">📺 Смотреть рекламу (+100)</button>
-        <button class="btn" onclick="buyBird()">🛒 Купить курицу (100)</button>
+        <button class="btn" onclick="buyBird('chicken')">🐔 Купить курицу (100)</button>
+        <button class="btn" onclick="buyBird('duck')">🦆 Купить утку (1000)</button>
+        <button class="btn" onclick="buyBird('goose')">🦢 Купить гуся (5000)</button>
         <div class="status" id="status"></div>
     </div>
 
@@ -76,13 +80,102 @@
         tg.expand();
         tg.ready();
 
-        let userData = {
-            balance: 100,
-            birds: { chicken: 0, duck: 0, goose: 0 },
-            incomePerHour: 0
+        // Уникальный ключ для игрока (чтобы у разных людей был свой прогресс)
+        const userId = tg.initDataUnsafe?.user?.id || "guest";
+        const STORAGE_KEY = "pernatiy_biznes_" + userId;
+
+        // Цены и доход птиц
+        const BIRDS = {
+            chicken: { name: "🐔 Курица", price: 100,  income: 10  },
+            duck:    { name: "🦆 Утка",   price: 1000, income: 50  },
+            goose:   { name: "🦢 Гусь",   price: 5000, income: 200 }
         };
 
-        // ==== ИНИЦИАЛИЗАЦИЯ РЕКЛАМЫ ADSGRAM ====
+        // Загружаем сохранённые данные или создаём новые
+        let userData = loadData();
+
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    // Начисляем пассивный доход за время отсутствия
+                    if (data.lastSeen) {
+                        const now = Date.now();
+                        const hours = Math.min((now - data.lastSeen) / 1000 / 3600, 24);
+                        const income = calculateIncome(data.birds);
+                        data.balance += Math.floor(income * hours);
+                    }
+                    data.lastSeen = Date.now();
+                    return data;
+                }
+            } catch (e) {
+                console.log("Ошибка загрузки:", e);
+            }
+            return {
+                balance: 100,
+                birds: { chicken: 0, duck: 0, goose: 0 },
+                lastSeen: Date.now()
+            };
+        }
+
+        function saveData() {
+            userData.lastSeen = Date.now();
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+            } catch (e) {
+                console.log("Ошибка сохранения:", e);
+            }
+        }
+
+        function calculateIncome(birds) {
+            let total = 0;
+            for (const key in birds) {
+                if (BIRDS[key]) total += BIRDS[key].income * birds[key];
+            }
+            return total;
+        }
+
+        function updateUI() {
+            document.getElementById('balance').textContent = userData.balance + ' суеты';
+            const income = calculateIncome(userData.birds);
+            document.getElementById('income').textContent = 'Доход: ' + income + '/час';
+
+            // Показываем список купленных птиц
+            let info = [];
+            for (const key in userData.birds) {
+                if (userData.birds[key] > 0) {
+                    info.push(BIRDS[key].name + ": " + userData.birds[key] + " шт");
+                }
+            }
+            document.getElementById('birds-info').textContent = info.join(" • ");
+        }
+
+        function setStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+
+        function tapBird() {
+            userData.balance += 1;
+            updateUI();
+            saveData();
+        }
+
+        function buyBird(type) {
+            const bird = BIRDS[type];
+            if (!bird) return;
+            if (userData.balance >= bird.price) {
+                userData.balance -= bird.price;
+                userData.birds[type] += 1;
+                updateUI();
+                saveData();
+                tg.showAlert('Куплено: ' + bird.name);
+            } else {
+                tg.showAlert('Недостаточно суеты! Нужно ' + bird.price);
+            }
+        }
+
+        // ==== ADSGRAM ====
         const BLOCK_ID = "53750";
         let AdController = null;
         try {
@@ -93,32 +186,7 @@
                 console.log("Adsgram SDK не загрузился");
             }
         } catch (e) {
-            console.log("Ошибка инициализации Adsgram:", e);
-        }
-
-        function updateUI() {
-            document.getElementById('balance').textContent = userData.balance + ' суеты';
-            document.getElementById('income').textContent = 'Доход: ' + userData.incomePerHour + '/час';
-        }
-
-        function setStatus(text) {
-            document.getElementById('status').textContent = text;
-        }
-
-        function tapBird() {
-            userData.balance += 1;
-            updateUI();
-        }
-
-        function buyBird() {
-            if (userData.balance >= 100) {
-                userData.balance -= 100;
-                userData.birds.chicken += 1;
-                userData.incomePerHour += 10;
-                updateUI();
-            } else {
-                tg.showAlert('Недостаточно суеты!');
-            }
+            console.log("Ошибка Adsgram:", e);
         }
 
         async function watchAd() {
@@ -131,10 +199,10 @@
             setStatus("Загрузка рекламы...");
             try {
                 const result = await AdController.show();
-                // Игрок досмотрел рекламу
                 console.log("Реклама просмотрена:", result);
                 userData.balance += 100;
                 updateUI();
+                saveData();
                 setStatus("✅ +100 суеты!");
                 tg.showAlert('Спасибо за просмотр! +100 суеты');
             } catch (err) {
@@ -144,6 +212,12 @@
                 btn.disabled = false;
             }
         }
+
+        // Сохраняем данные при закрытии Mini App
+        window.addEventListener('beforeunload', saveData);
+
+        // Автосохранение каждые 30 секунд
+        setInterval(saveData, 30000);
 
         updateUI();
     </script>
