@@ -17,7 +17,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             text-align: center;
         }
         .card {
@@ -30,7 +29,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        h1 { font-size: 24px; margin: 10px 0; }
+        h1 { font-size: 22px; margin: 8px 0; }
         .balance { font-size: 32px; font-weight: bold; color: #ffd700; }
         .bird { font-size: 60px; margin: 15px 0; cursor: pointer; transition: transform 0.1s; user-select: none; }
         .bird:active { transform: scale(1.2); }
@@ -38,26 +37,29 @@
             background: #ffd700;
             color: #1a1a2e;
             border: none;
-            padding: 15px 30px;
+            padding: 14px 24px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            margin: 8px;
-            width: 80%;
+            margin: 6px;
+            width: 85%;
             transition: transform 0.1s;
         }
         .btn:active { transform: scale(0.95); }
         .btn-ad { background: #4CAF50; color: white; }
-        .btn:disabled { opacity: 0.6; }
-        .status { font-size: 13px; color: #aaa; margin-top: 10px; min-height: 18px; }
+        .btn:disabled { opacity: 0.5; }
+        .status { font-size: 12px; color: #888; margin-top: 10px; min-height: 16px; }
         .birds-info { font-size: 13px; color: #ccc; margin-top: 8px; line-height: 1.6; }
+        .saved { color: #4CAF50; }
+        .saving { color: #ffd700; }
+        .error { color: #f44336; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>🐔 Пернатый Бизнес</h1>
-        <div class="balance" id="balance">0 суеты</div>
+        <div class="balance" id="balance">...</div>
         <div style="font-size: 14px; color: #aaa;" id="income">Доход: 0/час</div>
         <div class="birds-info" id="birds-info"></div>
     </div>
@@ -69,9 +71,9 @@
 
     <div class="card">
         <button class="btn btn-ad" id="adBtn" onclick="watchAd()">📺 Смотреть рекламу (+100)</button>
-        <button class="btn" onclick="buyBird('chicken')">🐔 Купить курицу (100)</button>
-        <button class="btn" onclick="buyBird('duck')">🦆 Купить утку (1000)</button>
-        <button class="btn" onclick="buyBird('goose')">🦢 Купить гуся (5000)</button>
+        <button class="btn" onclick="buyBird('chicken')">🐔 Курица (100)</button>
+        <button class="btn" onclick="buyBird('duck')">🦆 Утка (1000)</button>
+        <button class="btn" onclick="buyBird('goose')">🦢 Гусь (5000)</button>
         <div class="status" id="status"></div>
     </div>
 
@@ -80,85 +82,110 @@
         tg.expand();
         tg.ready();
 
-        // Уникальный ключ для игрока (чтобы у разных людей был свой прогресс)
+        const API = "https://pernatiubiznes.mitrasa355.workers.dev";
         const userId = tg.initDataUnsafe?.user?.id || "guest";
-        const STORAGE_KEY = "pernatiy_biznes_" + userId;
+        const DAILY_AD_LIMIT = 10;
 
-        // Цены и доход птиц
         const BIRDS = {
             chicken: { name: "🐔 Курица", price: 100,  income: 10  },
             duck:    { name: "🦆 Утка",   price: 1000, income: 50  },
             goose:   { name: "🦢 Гусь",   price: 5000, income: 200 }
         };
 
-        // Загружаем сохранённые данные или создаём новые
-        let userData = loadData();
+        let userData = {
+            balance: 100,
+            birds: { chicken: 0, duck: 0, goose: 0 },
+            lastSeen: Date.now(),
+            adsToday: 0,
+            adsDate: new Date().toDateString()
+        };
 
-        function loadData() {
+        let lastSync = 0;
+        let tickTimer = null;
+
+        // ==== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====
+        async function loadFromServer() {
+            setStatus("Загрузка...", "");
             try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    const data = JSON.parse(raw);
-                    // Начисляем пассивный доход за время отсутствия
-                    if (data.lastSeen) {
-                        const now = Date.now();
-                        const hours = Math.min((now - data.lastSeen) / 1000 / 3600, 24);
-                        const income = calculateIncome(data.birds);
-                        data.balance += Math.floor(income * hours);
-                    }
-                    data.lastSeen = Date.now();
-                    return data;
+                const r = await fetch(API + "/balance?user=" + userId);
+                const data = await r.json();
+                userData = { ...userData, ...data };
+                if (userData.adsDate !== new Date().toDateString()) {
+                    userData.adsToday = 0;
+                    userData.adsDate = new Date().toDateString();
                 }
+                // Начисляем пассивный доход за время отсутствия
+                if (userData.lastSeen) {
+                    const now = Date.now();
+                    const hours = Math.min((now - userData.lastSeen) / 1000 / 3600, 24);
+                    const inc = calculateIncome() * hours;
+                    if (inc > 0) userData.balance += Math.floor(inc);
+                }
+                userData.lastSeen = Date.now();
+                updateUI();
+                setStatus("✅ Данные загружены", "saved");
             } catch (e) {
                 console.log("Ошибка загрузки:", e);
+                setStatus("⚠️ Оффлайн режим", "error");
             }
-            return {
-                balance: 100,
-                birds: { chicken: 0, duck: 0, goose: 0 },
-                lastSeen: Date.now()
-            };
         }
 
-        function saveData() {
+        // ==== СОХРАНЕНИЕ НА СЕРВЕР ====
+        async function saveToServer() {
             userData.lastSeen = Date.now();
+            setStatus("Сохранение...", "saving");
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+                const r = await fetch(API + "/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: userId,
+                        balance: userData.balance,
+                        birds: userData.birds
+                    })
+                });
+                if (r.ok) {
+                    lastSync = Date.now();
+                    setStatus("✅ Сохранено", "saved");
+                } else {
+                    setStatus("⚠️ Ошибка сохранения", "error");
+                }
             } catch (e) {
                 console.log("Ошибка сохранения:", e);
+                setStatus("⚠️ Нет связи", "error");
             }
         }
 
-        function calculateIncome(birds) {
+        // ==== РАСЧЁТЫ ====
+        function calculateIncome() {
             let total = 0;
-            for (const key in birds) {
-                if (BIRDS[key]) total += BIRDS[key].income * birds[key];
+            for (const key in userData.birds) {
+                if (BIRDS[key]) total += BIRDS[key].income * userData.birds[key];
             }
             return total;
         }
 
         function updateUI() {
-            document.getElementById('balance').textContent = userData.balance + ' суеты';
-            const income = calculateIncome(userData.birds);
-            document.getElementById('income').textContent = 'Доход: ' + income + '/час';
-
-            // Показываем список купленных птиц
+            document.getElementById('balance').textContent = Math.floor(userData.balance) + ' суеты';
+            const inc = calculateIncome();
+            document.getElementById('income').textContent = 'Доход: ' + inc + '/час';
             let info = [];
             for (const key in userData.birds) {
-                if (userData.birds[key] > 0) {
-                    info.push(BIRDS[key].name + ": " + userData.birds[key] + " шт");
-                }
+                if (userData.birds[key] > 0) info.push(BIRDS[key].name + ": " + userData.birds[key]);
             }
             document.getElementById('birds-info').textContent = info.join(" • ");
         }
 
-        function setStatus(text) {
-            document.getElementById('status').textContent = text;
+        function setStatus(text, cls) {
+            const el = document.getElementById('status');
+            el.textContent = text;
+            el.className = 'status ' + (cls || '');
         }
 
+        // ==== ДЕЙСТВИЯ ====
         function tapBird() {
             userData.balance += 1;
             updateUI();
-            saveData();
         }
 
         function buyBird(type) {
@@ -168,8 +195,7 @@
                 userData.balance -= bird.price;
                 userData.birds[type] += 1;
                 updateUI();
-                saveData();
-                tg.showAlert('Куплено: ' + bird.name);
+                saveToServer();
             } else {
                 tg.showAlert('Недостаточно суеты! Нужно ' + bird.price);
             }
@@ -181,45 +207,68 @@
         try {
             if (window.Adsgram) {
                 AdController = window.Adsgram.init({ blockId: BLOCK_ID });
-                console.log("Adsgram готов");
-            } else {
-                console.log("Adsgram SDK не загрузился");
             }
-        } catch (e) {
-            console.log("Ошибка Adsgram:", e);
-        }
+        } catch (e) { console.log("Adsgram error:", e); }
 
         async function watchAd() {
             const btn = document.getElementById('adBtn');
+            if (userData.adsToday >= DAILY_AD_LIMIT) {
+                tg.showAlert('Лимит рекламы на сегодня: ' + DAILY_AD_LIMIT);
+                return;
+            }
             if (!AdController) {
                 tg.showAlert('Реклама пока не загрузилась. Попробуй позже.');
                 return;
             }
             btn.disabled = true;
-            setStatus("Загрузка рекламы...");
+            setStatus("Загрузка рекламы...", "");
             try {
-                const result = await AdController.show();
-                console.log("Реклама просмотрена:", result);
+                await AdController.show();
                 userData.balance += 100;
+                userData.adsToday++;
                 updateUI();
-                saveData();
-                setStatus("✅ +100 суеты!");
-                tg.showAlert('Спасибо за просмотр! +100 суеты');
+                saveToServer();
+                tg.showAlert('Спасибо! +100 суеты');
             } catch (err) {
-                console.log("Ошибка показа рекламы:", err);
-                setStatus("Реклама не показалась. Попробуй позже.");
+                console.log("Ошибка показа:", err);
+                setStatus("Реклама не показалась", "error");
             } finally {
                 btn.disabled = false;
             }
         }
 
-        // Сохраняем данные при закрытии Mini App
-        window.addEventListener('beforeunload', saveData);
+        // ==== ТИК ПАССИВНОГО ДОХОДА (каждую секунду) ====
+        function tick() {
+            const inc = calculateIncome();
+            if (inc > 0) {
+                userData.balance += inc / 3600;
+                updateUI();
+            }
+        }
 
-        // Автосохранение каждые 30 секунд
-        setInterval(saveData, 30000);
+        // ==== АВТОСОХРАНЕНИЕ ====
+        function autoSave() {
+            if (Date.now() - lastSync > 25000) {
+                saveToServer();
+            }
+        }
 
-        updateUI();
+        // ==== ЗАПУСК ====
+        (async () => {
+            await loadFromServer();
+            tickTimer = setInterval(tick, 1000);
+            setInterval(autoSave, 30000);
+        })();
+
+        window.addEventListener('beforeunload', () => {
+            // Синхронная попытка сохранить при закрытии
+            const blob = new Blob([JSON.stringify({
+                userId: userId,
+                balance: userData.balance,
+                birds: userData.birds
+            })], { type: 'application/json' });
+            navigator.sendBeacon(API + "/update", blob);
+        });
     </script>
 </body>
 </html>
