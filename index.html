@@ -12,7 +12,7 @@
             background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
             color: #fff;
             margin: 0;
-            padding: 20px;
+            padding: 20px 20px 80px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -31,6 +31,7 @@
         }
         h1 { font-size: 22px; margin: 8px 0; }
         .balance { font-size: 32px; font-weight: bold; color: #ffd700; }
+        .ton-eq { font-size: 13px; color: #4CAF50; margin-top: 4px; }
         .bird { font-size: 60px; margin: 15px 0; cursor: pointer; transition: transform 0.1s; user-select: none; }
         .bird:active { transform: scale(1.2); }
         .btn {
@@ -48,19 +49,58 @@
         }
         .btn:active { transform: scale(0.95); }
         .btn-ad { background: #4CAF50; color: white; }
+        .btn-withdraw { background: #ff9800; color: white; }
         .btn:disabled { opacity: 0.5; }
         .status { font-size: 12px; color: #888; margin-top: 10px; min-height: 16px; }
         .birds-info { font-size: 13px; color: #ccc; margin-top: 8px; line-height: 1.6; }
         .saved { color: #4CAF50; }
         .saving { color: #ffd700; }
         .error { color: #f44336; }
+
+        /* Модальное окно */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-box {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .modal-box h2 { margin: 0 0 12px; font-size: 20px; }
+        .modal-box p { font-size: 14px; color: #ccc; margin: 8px 0; }
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+        .modal-box .row { display: flex; gap: 8px; margin-top: 10px; }
+        .modal-box .row .btn { width: 50%; margin: 0; }
+        .btn-cancel { background: #444; color: #fff; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>🐔 Пернатый Бизнес</h1>
         <div class="balance" id="balance">...</div>
-        <div style="font-size: 14px; color: #aaa;" id="income">Доход: 0/час</div>
+        <div class="ton-eq" id="ton-eq"></div>
+        <div style="font-size: 14px; color: #aaa; margin-top: 6px;" id="income">Доход: 0/час</div>
         <div class="birds-info" id="birds-info"></div>
     </div>
 
@@ -74,7 +114,24 @@
         <button class="btn" onclick="buyBird('chicken')">🐔 Курица (100)</button>
         <button class="btn" onclick="buyBird('duck')">🦆 Утка (1000)</button>
         <button class="btn" onclick="buyBird('goose')">🦢 Гусь (5000)</button>
+        <button class="btn btn-withdraw" onclick="openWithdraw()">💸 Вывести TON</button>
         <div class="status" id="status"></div>
+    </div>
+
+    <!-- Модальное окно вывода TON -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-box">
+            <h2>💸 Вывод TON</h2>
+            <p id="wd-balance">Баланс: ...</p>
+            <p id="wd-min">Минимум: 5000 суеты = 0.1 TON</p>
+            <input type="text" id="wd-wallet" placeholder="Адрес TON-кошелька (UQ... или EQ...)" />
+            <p style="font-size: 12px; color: #888;">Введи адрес своего кошелька Tonkeeper или Telegram Wallet</p>
+            <div class="row">
+                <button class="btn btn-cancel" onclick="closeWithdraw()">Отмена</button>
+                <button class="btn btn-withdraw" id="wd-submit" onclick="submitWithdraw()">Отправить</button>
+            </div>
+            <div class="status" id="wd-status"></div>
+        </div>
     </div>
 
     <script>
@@ -85,6 +142,8 @@
         const API = "https://pernatiubiznes.mitrasa355.workers.dev";
         const userId = tg.initDataUnsafe?.user?.id || "guest";
         const DAILY_AD_LIMIT = 10;
+        const SUETA_PER_TON = 50000;
+        const MIN_WITHDRAW = 5000;
 
         const BIRDS = {
             chicken: { name: "🐔 Курица", price: 100,  income: 10  },
@@ -101,9 +160,8 @@
         };
 
         let lastSync = 0;
-        let tickTimer = null;
 
-        // ==== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====
+        // ========== ЗАГРУЗКА С СЕРВЕРА ==========
         async function loadFromServer() {
             setStatus("Загрузка...", "");
             try {
@@ -114,7 +172,6 @@
                     userData.adsToday = 0;
                     userData.adsDate = new Date().toDateString();
                 }
-                // Начисляем пассивный доход за время отсутствия
                 if (userData.lastSeen) {
                     const now = Date.now();
                     const hours = Math.min((now - userData.lastSeen) / 1000 / 3600, 24);
@@ -130,7 +187,7 @@
             }
         }
 
-        // ==== СОХРАНЕНИЕ НА СЕРВЕР ====
+        // ========== СОХРАНЕНИЕ НА СЕРВЕР ==========
         async function saveToServer() {
             userData.lastSeen = Date.now();
             setStatus("Сохранение...", "saving");
@@ -140,7 +197,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         userId: userId,
-                        balance: userData.balance,
+                        balance: Math.floor(userData.balance),
                         birds: userData.birds
                     })
                 });
@@ -156,7 +213,7 @@
             }
         }
 
-        // ==== РАСЧЁТЫ ====
+        // ========== РАСЧЁТЫ ==========
         function calculateIncome() {
             let total = 0;
             for (const key in userData.birds) {
@@ -167,6 +224,8 @@
 
         function updateUI() {
             document.getElementById('balance').textContent = Math.floor(userData.balance) + ' суеты';
+            const ton = (userData.balance / SUETA_PER_TON).toFixed(4);
+            document.getElementById('ton-eq').textContent = '≈ ' + ton + ' TON';
             const inc = calculateIncome();
             document.getElementById('income').textContent = 'Доход: ' + inc + '/час';
             let info = [];
@@ -182,7 +241,7 @@
             el.className = 'status ' + (cls || '');
         }
 
-        // ==== ДЕЙСТВИЯ ====
+        // ========== ДЕЙСТВИЯ ==========
         function tapBird() {
             userData.balance += 1;
             updateUI();
@@ -201,7 +260,7 @@
             }
         }
 
-        // ==== ADSGRAM ====
+        // ========== РЕКЛАМА ==========
         const BLOCK_ID = "53750";
         let AdController = null;
         try {
@@ -237,7 +296,77 @@
             }
         }
 
-        // ==== ТИК ПАССИВНОГО ДОХОДА (каждую секунду) ====
+        // ========== ВЫВОД TON ==========
+        function openWithdraw() {
+            if (userData.balance < MIN_WITHDRAW) {
+                tg.showAlert('Минимум для вывода: ' + MIN_WITHDRAW + ' суеты (0.1 TON)');
+                return;
+            }
+            const balanceTon = (userData.balance / SUETA_PER_TON).toFixed(4);
+            document.getElementById('wd-balance').textContent = 'Баланс: ' + Math.floor(userData.balance) + ' суеты (≈ ' + balanceTon + ' TON)';
+            document.getElementById('wd-wallet').value = '';
+            document.getElementById('wd-status').textContent = '';
+            document.getElementById('withdrawModal').classList.add('active');
+        }
+
+        function closeWithdraw() {
+            document.getElementById('withdrawModal').classList.remove('active');
+        }
+
+        async function submitWithdraw() {
+            const wallet = document.getElementById('wd-wallet').value.trim();
+            const wdStatus = document.getElementById('wd-status');
+            const btn = document.getElementById('wd-submit');
+
+            if (!wallet || wallet.length < 40) {
+                wdStatus.textContent = '⚠️ Проверь адрес кошелька';
+                wdStatus.className = 'status error';
+                return;
+            }
+
+            if (userData.balance < MIN_WITHDRAW) {
+                wdStatus.textContent = '⚠️ Недостаточно суеты';
+                wdStatus.className = 'status error';
+                return;
+            }
+
+            const amountTon = +(userData.balance / SUETA_PER_TON).toFixed(4);
+            btn.disabled = true;
+            wdStatus.textContent = 'Отправка заявки...';
+            wdStatus.className = 'status saving';
+
+            try {
+                const r = await fetch(API + "/withdraw", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: userId,
+                        wallet: wallet,
+                        amountTon: amountTon
+                    })
+                });
+                const res = await r.json();
+                if (r.ok && res.ok) {
+                    wdStatus.textContent = '✅ Заявка создана! Ожидай выплату до 24 часов';
+                    wdStatus.className = 'status saved';
+                    userData.balance = 0;
+                    updateUI();
+                    saveToServer();
+                    setTimeout(closeWithdraw, 2500);
+                } else {
+                    wdStatus.textContent = '⚠️ Ошибка: ' + (res.error || 'попробуй позже');
+                    wdStatus.className = 'status error';
+                }
+            } catch (e) {
+                console.log("Withdraw error:", e);
+                wdStatus.textContent = '⚠️ Нет связи с сервером';
+                wdStatus.className = 'status error';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // ========== ТИК ПАССИВНОГО ДОХОДА ==========
         function tick() {
             const inc = calculateIncome();
             if (inc > 0) {
@@ -246,25 +375,21 @@
             }
         }
 
-        // ==== АВТОСОХРАНЕНИЕ ====
         function autoSave() {
-            if (Date.now() - lastSync > 25000) {
-                saveToServer();
-            }
+            if (Date.now() - lastSync > 25000) saveToServer();
         }
 
-        // ==== ЗАПУСК ====
+        // ========== ЗАПУСК ==========
         (async () => {
             await loadFromServer();
-            tickTimer = setInterval(tick, 1000);
+            setInterval(tick, 1000);
             setInterval(autoSave, 30000);
         })();
 
         window.addEventListener('beforeunload', () => {
-            // Синхронная попытка сохранить при закрытии
             const blob = new Blob([JSON.stringify({
                 userId: userId,
-                balance: userData.balance,
+                balance: Math.floor(userData.balance),
                 birds: userData.birds
             })], { type: 'application/json' });
             navigator.sendBeacon(API + "/update", blob);
