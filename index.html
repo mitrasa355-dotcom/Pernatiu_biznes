@@ -226,6 +226,9 @@
         const ENERGY_MAX = 1000;
         const ENERGY_RECOVER_SEC = 10;
 
+        // ⚠️ ЗАМЕНИТЕ НА НОВЫЙ ID БЛОКА ИЗ ADSGRAM ПОСЛЕ ОДОБРЕНИЯ МОДЕРАЦИИ
+        const BLOCK_ID = "53750"; 
+
         const BIRDS = {
             chicken: { name: "🐔 Курица", priceS: 500,   priceF: 10,  income: 10  },
             duck:    { name: "🦆 Утка",   priceS: 5000,  priceF: 100, income: 50  },
@@ -249,7 +252,8 @@
             energy: 1000, energyUpdatedAt: Date.now(),
             adsToday: 0, adsDate: new Date().toDateString(),
             weeklySueta: 0, weeklyBirds: 0,
-            lastSeen: Date.now()
+            lastSeen: Date.now(),
+            userName: "Игрок", username: ""
         };
 
         let lastSync = 0;
@@ -307,7 +311,9 @@
                         energy: userData.energy,
                         energyUpdatedAt: userData.energyUpdatedAt,
                         weeklySueta: userData.weeklySueta,
-                        weeklyBirds: userData.weeklyBirds
+                        weeklyBirds: userData.weeklyBirds,
+                        userName: tg.initDataUnsafe?.user?.first_name || "Игрок",
+                        username: tg.initDataUnsafe?.user?.username || ""
                     })
                 });
                 if (r.ok) { lastSync = Date.now(); setStatus("✅ Сохранено", "saved"); }
@@ -423,7 +429,6 @@
             showToast('🎁 День ' + userData.dailyStreak + ': +' + s + '🪙 +' + f + '🪶');
         }
 
-        const BLOCK_ID = "51294";
         let AdController = null;
         try { if (window.Adsgram) AdController = window.Adsgram.init({ blockId: BLOCK_ID }); } catch (e) {}
 
@@ -473,9 +478,10 @@
                 const isMe = String(row.userId) === String(userId);
                 const medal = medals[i] || (i + 1);
                 const reward = rewards[i] || 0;
+                const displayName = isMe ? 'Ты' : (row.username ? '@' + row.username : (row.userName || 'Игрок'));
                 html += `<div class="leaderboard-row ${isMe ? 'me' : ''}">
                     <div class="rank ${rankClass}">${medal}</div>
-                    <div class="lb-user">${isMe ? 'Ты' : '...' + String(row.userId).slice(-6)}</div>
+                    <div class="lb-user">${displayName}</div>
                     <div class="lb-value">${fmt(row.value)}</div>
                     ${reward ? `<div class="lb-reward">+${reward}🪶</div>` : ''}
                 </div>`;
@@ -542,7 +548,9 @@
                 achievements: userData.achievements, totalTaps: userData.totalTaps,
                 totalEarned: userData.totalEarned, energy: userData.energy,
                 energyUpdatedAt: userData.energyUpdatedAt,
-                weeklySueta: userData.weeklySueta, weeklyBirds: userData.weeklyBirds
+                weeklySueta: userData.weeklySueta, weeklyBirds: userData.weeklyBirds,
+                userName: tg.initDataUnsafe?.user?.first_name || "Игрок",
+                username: tg.initDataUnsafe?.user?.username || ""
             })], { type: 'application/json' });
             navigator.sendBeacon(API + "/update", blob);
         });
