@@ -14,7 +14,8 @@
         .header { text-align: center; margin-bottom: 12px; }
         .header h1 { font-size: 22px; margin: 0; background: linear-gradient(90deg, #ffd700, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .card { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
-        .section-title { font-size: 13px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; }
+        .section-title { font-size: 13px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center;}
+        .info-icon { cursor: pointer; font-size: 16px; color: #ffd700; }
         
         .top-wallets { display: flex; gap: 8px; margin-bottom: 12px; }
         .wallet { flex: 1; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,152,0,0.05)); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.2); }
@@ -26,7 +27,7 @@
 
         .btn { display: block; width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; margin-bottom: 8px; transition: transform 0.08s; font-family: inherit; }
         .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.5; }
+        .btn:disabled { opacity: 0.5; background: #333 !important; color: #888 !important; box-shadow: none !important;}
         .btn-primary { background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; }
         .btn-gold { background: linear-gradient(135deg, #ffd700, #ff9800); color: #1a1a2e; }
         .btn-purple { background: linear-gradient(135deg, #9c27b0, #673ab7); color: #fff; }
@@ -107,7 +108,7 @@
             </div>
             <div class="card">
                 <button class="btn btn-primary" id="adBtn" onclick="watchAd()">📺 Смотреть рекламу (+80 суеты +2 🪶)</button>
-                <button class="btn btn-gold" onclick="feedBirds()">🍎 Покормить птиц (<span id="feed-cost">0</span> 🪙)</button>
+                <button class="btn btn-gold" id="feedBtn" onclick="feedBirds()">🍎 Покормить птиц (<span id="feed-cost">0</span> 🪙)</button>
             </div>
         </div>
 
@@ -122,7 +123,10 @@
         <!-- 3. ИВЕНТЫ -->
         <div id="tab-events" class="tab-content" style="display:none;">
             <div class="card">
-                <div class="section-title">🎡 Колесо Фортуны</div>
+                <div class="section-title">
+                    <span>🎡 Колесо Фортуны</span>
+                    <span class="info-icon" onclick="showWheelInfo()">ℹ️ Призы</span>
+                </div>
                 <div class="wheel-container"><div class="wheel-icon" id="wheel-icon">🎰</div></div>
                 <button class="btn btn-blue" id="spin-free-btn" onclick="spinWheel('free')">🎁 Бесплатный спин</button>
                 <button class="btn btn-purple" id="spin-ad-btn" onclick="spinWheel('ad')">📺 Крутить за рекламу</button>
@@ -157,7 +161,7 @@
             </div>
         </div>
 
-        <!-- 5. БАНК (Вывод, Рефералка, Лидерборд) -->
+        <!-- 5. БАНК -->
         <div id="tab-bank" class="tab-content" style="display:none;">
             <div class="card">
                 <div class="section-title">💸 Вывод средств</div>
@@ -220,7 +224,6 @@
             goose: { name: "🦢 Гусь", priceS: 25000, priceF: 500, income: 200, feedCost: 100 }
         };
 
-        // Инициализация дефолтными значениями, чтобы не было NaN
         let userData = { 
             balance: 0, feathers: 0, energy: 60, birds: [], 
             tasks: { taps: 0, birdsBought: 0, adsWatched: 0, claimed: [] } 
@@ -242,9 +245,7 @@
                 const r = await fetch(API + "/balance?user=" + userId);
                 if (!r.ok) throw new Error("Server error");
                 const data = await r.json();
-                if (data && data.balance !== undefined) {
-                    userData = data;
-                }
+                if (data && data.balance !== undefined) { userData = data; }
                 updateUI();
             } catch (e) { console.log("Load error:", e); }
         }
@@ -301,14 +302,66 @@
             document.getElementById('energy-text').textContent = Math.floor(safeEnergy) + '/' + maxE;
             
             document.getElementById('income').textContent = '+' + Math.floor(calculateTotalIncome()) + '/час';
-            const feedCost = calcFeedCost();
-            document.getElementById('feed-cost').textContent = feedCost;
+
+            // Логика кнопки кормления
+            const feedBtn = document.getElementById('feedBtn');
+            if (userData.birds && userData.birds.length > 0 && userData.birds[0].lastFed) {
+                const hoursSinceFed = (Date.now() - userData.birds[0].lastFed) / (1000 * 60 * 60);
+                if (hoursSinceFed < 6) {
+                    feedBtn.disabled = true;
+                    feedBtn.innerHTML = `🍎 Птицы сыты (${Math.ceil(6 - hoursSinceFed)} ч.)`;
+                } else {
+                    feedBtn.disabled = false;
+                    feedBtn.innerHTML = `🍎 Покормить птиц (<span id="feed-cost">${calcFeedCost()}</span> 🪙)`;
+                }
+            } else {
+                feedBtn.disabled = true;
+                feedBtn.innerHTML = `🍎 Нет птиц`;
+            }
             
             renderAviary();
             renderTasks();
             renderReferrals();
             loadLeaderboard();
+            updateWheelButtons(); // Обновляем таймеры колеса
         }
+
+        function updateWheelButtons() {
+            const freeBtn = document.getElementById('spin-free-btn');
+            const adBtn = document.getElementById('spin-ad-btn');
+            const now = Date.now();
+
+            // Бесплатный спин (24 часа)
+            const freeDiff = now - (userData.lastFreeSpin || 0);
+            const freeLeft = 24 * 60 * 60 * 1000 - freeDiff;
+            if (freeLeft > 0) {
+                freeBtn.disabled = true;
+                const h = Math.floor(freeLeft / 3600000);
+                const m = Math.floor((freeLeft % 3600000) / 60000);
+                freeBtn.innerHTML = `⏳ Бесплатный спин (${h}ч ${m}м)`;
+            } else {
+                freeBtn.disabled = false;
+                freeBtn.innerHTML = `🎁 Бесплатный спин`;
+            }
+
+            // Спин за рекламу (1 час)
+            const adDiff = now - (userData.lastPaidSpin || 0);
+            const adLeft = 60 * 60 * 1000 - adDiff;
+            if (adLeft > 0) {
+                adBtn.disabled = true;
+                const m = Math.floor(adLeft / 60000);
+                adBtn.innerHTML = `⏳ Крутить за рекламу (${m}м)`;
+            } else {
+                adBtn.disabled = false;
+                adBtn.innerHTML = `📺 Крутить за рекламу`;
+            }
+        }
+
+        function showWheelInfo() {
+            tg.showAlert("🎡 Призы колеса фортуны:\n\n🪙 100-500 суеты — 40%\n🪶 1-3 перьев — 30%\n🪙 1000-2000 суеты — 20%\n💎 Джекпот (5000 суеты + 10 перьев) — 10%");
+        }
+
+        // ... (остальные функции renderAviary, renderTasks, renderLB, switchTab, tapBird, buyBird, feedBirds, spinWheel, claimTask, copyRefLink, openWithdraw, submitWithdraw, watchAd остаются без изменений)
 
         function renderAviary() {
             const list = document.getElementById('aviary-list');
@@ -472,6 +525,7 @@
                     if(res.ok) { userData = res.data; showToast(`🎉 Выигрыш: ${res.prize}!`); updateUI(); } 
                     else { tg.showAlert(res.error); }
                     btn.disabled = false; icon.style.transition = 'none'; icon.style.transform = 'rotate(0)';
+                    updateWheelButtons();
                 }, 3000);
             } catch(e) { btn.disabled = false; icon.style.transition = 'none'; icon.style.transform = 'rotate(0)'; }
         }
