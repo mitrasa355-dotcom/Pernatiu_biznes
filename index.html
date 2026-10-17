@@ -8,122 +8,101 @@
     <script src="https://sdk.adsgram.ai/js/sdk.min.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: radial-gradient(ellipse at top, #2d1b4e 0%, #0f0a1e 60%);
-            color: #fff; margin: 0; padding: 12px 12px 100px; min-height: 100vh; overflow-x: hidden; }
+            color: #fff; margin: 0; padding: 12px 12px 90px; /* Отступ снизу для меню */
+            min-height: 100vh; overflow-x: hidden;
+        }
         .container { max-width: 440px; margin: 0 auto; }
+        
+        /* === Общие стили === */
         .header { text-align: center; margin-bottom: 12px; }
-        .header h1 { font-size: 22px; margin: 0;
-            background: linear-gradient(90deg, #ffd700, #ff9800);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .card { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-            border-radius: 20px; padding: 16px; margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
+        .header h1 { font-size: 22px; margin: 0; background: linear-gradient(90deg, #ffd700, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
+        .section-title { font-size: 13px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; }
+        
+        /* Валюты */
         .top-wallets { display: flex; gap: 8px; margin-bottom: 12px; }
-        .wallet { flex: 1; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,152,0,0.05));
-            border-radius: 16px; padding: 12px; text-align: center;
-            border: 1px solid rgba(255,215,0,0.2); }
-        .wallet.feather { background: linear-gradient(135deg, rgba(156,39,176,0.2), rgba(103,58,183,0.08));
-            border-color: rgba(156,39,176,0.3); }
+        .wallet { flex: 1; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,152,0,0.05)); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.2); }
+        .wallet.feather { background: linear-gradient(135deg, rgba(156,39,176,0.2), rgba(103,58,183,0.08)); border-color: rgba(156,39,176,0.3); }
         .wallet-label { font-size: 11px; color: #bbb; letter-spacing: 1px; text-transform: uppercase; }
         .wallet-value { font-size: 22px; font-weight: 800; color: #ffd700; margin-top: 2px; }
         .wallet.feather .wallet-value { color: #ce93d8; }
         .income-badge { display: block; font-size: 11px; color: #4CAF50; margin-top: 4px; font-weight: 600; }
 
-        .energy-bar { background: rgba(255,255,255,0.08); border-radius: 10px; height: 8px; overflow: hidden; margin-top: 8px; }
-        .energy-fill { background: linear-gradient(90deg, #ffd700, #ff9800); height: 100%; transition: width 0.3s; }
-        .energy-text { font-size: 11px; color: #aaa; text-align: center; margin-top: 4px; }
-
-        .farm-area { text-align: center; padding: 20px 16px;
-            background: linear-gradient(180deg, rgba(76,175,80,0.15), rgba(76,175,80,0.03));
-            border: 1px solid rgba(76,175,80,0.2); border-radius: 20px; margin-bottom: 12px; }
-        .bird { font-size: 90px; cursor: pointer; user-select: none; display: inline-block;
-            transition: transform 0.08s; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
-            animation: bob 2.5s ease-in-out infinite; }
-        @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .bird:active { transform: scale(0.9); animation: none; }
-        .bird-name { font-size: 16px; font-weight: 700; margin-top: 6px; }
-        .tap-hint { font-size: 12px; color: #888; margin-top: 4px; }
-
-        .btn { display: block; width: 100%; padding: 14px; border-radius: 14px;
-            font-size: 15px; font-weight: 700; cursor: pointer; border: none;
-            margin-bottom: 8px; transition: transform 0.08s; font-family: inherit; }
+        /* Кнопки */
+        .btn { display: block; width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; margin-bottom: 8px; transition: transform 0.08s; font-family: inherit; }
         .btn:active { transform: scale(0.97); }
         .btn:disabled { opacity: 0.5; }
         .btn-primary { background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; }
         .btn-gold { background: linear-gradient(135deg, #ffd700, #ff9800); color: #1a1a2e; }
         .btn-purple { background: linear-gradient(135deg, #9c27b0, #673ab7); color: #fff; }
         .btn-withdraw { background: linear-gradient(135deg, #ff5722, #d32f2f); color: #fff; }
-        .btn-daily { background: linear-gradient(135deg, #2196F3, #1976D2); color: #fff; }
+        .btn-blue { background: linear-gradient(135deg, #2196F3, #1976D2); color: #fff; }
 
-        .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-        .tab { flex: 1; padding: 10px; background: rgba(255,255,255,0.05);
-            border-radius: 12px; text-align: center; cursor: pointer;
-            font-size: 13px; font-weight: 600; border: 1px solid transparent; transition: all 0.2s; }
-        .tab.active { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.4); color: #ffd700; }
+        /* Ферма */
+        .bird { font-size: 90px; cursor: pointer; user-select: none; display: inline-block; transition: transform 0.08s; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4)); animation: bob 2.5s ease-in-out infinite; margin: 0 auto; }
+        @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        .bird:active { transform: scale(0.9); animation: none; }
+        .energy-bar { background: rgba(255,255,255,0.08); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 15px; }
+        .energy-fill { background: linear-gradient(90deg, #ffd700, #ff9800); height: 100%; transition: width 0.3s; }
+        .energy-text { font-size: 12px; color: #aaa; text-align: center; margin-top: 6px; font-weight: bold; }
 
+        /* Птичник */
+        .aviary-item { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid #4CAF50; }
+        .aviary-item.hungry { border-left-color: #ff9800; }
+        .aviary-item.starving { border-left-color: #f44336; }
+        .aviary-icon { font-size: 32px; margin-right: 12px; }
+        .aviary-info { flex: 1; }
+        .aviary-title { font-size: 14px; font-weight: bold; }
+        .aviary-stats { font-size: 11px; color: #aaa; margin-top: 2px; }
+        
+        /* Колесо и Задания */
+        .wheel-container { text-align: center; padding: 20px 0; }
+        .wheel-icon { font-size: 100px; transition: transform 3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .task-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
+        .task-info { flex: 1; }
+        .task-title { font-size: 13px; font-weight: bold; }
+        .task-progress { font-size: 11px; color: #aaa; margin-top: 4px; }
+        
+        /* Магазин */
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .shop-item { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 6px;
-            text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        .shop-item { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 6px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
         .shop-item .icon { font-size: 32px; }
         .shop-item .name { font-size: 11px; color: #ccc; margin-top: 2px; }
-        .shop-item .price-s { font-size: 11px; color: #ffd700; font-weight: 700; margin-top: 4px; cursor: pointer;
-            padding: 4px; border-radius: 6px; background: rgba(255,215,0,0.1); }
-        .shop-item .price-f { font-size: 11px; color: #ce93d8; font-weight: 700; margin-top: 3px; cursor: pointer;
-            padding: 4px; border-radius: 6px; background: rgba(156,39,176,0.15); }
-        .shop-item .count { font-size: 10px; color: #4CAF50; font-weight: 700; margin-top: 2px; }
-        .shop-item.owned { border-color: rgba(76,175,80,0.4); }
+        .shop-item .price-s { font-size: 11px; color: #ffd700; font-weight: 700; margin-top: 4px; cursor: pointer; padding: 4px; border-radius: 6px; background: rgba(255,215,0,0.1); }
+        .shop-item .price-f { font-size: 11px; color: #ce93d8; font-weight: 700; margin-top: 3px; cursor: pointer; padding: 4px; border-radius: 6px; background: rgba(156,39,176,0.15); }
 
-        .leaderboard-row { display: flex; align-items: center; padding: 8px 10px; border-radius: 10px;
-            background: rgba(255,255,255,0.04); margin-bottom: 6px; font-size: 13px; }
+        /* Лидерборд */
+        .leaderboard-row { display: flex; align-items: center; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); margin-bottom: 6px; font-size: 13px; }
         .leaderboard-row.me { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
         .rank { font-weight: 800; width: 30px; text-align: center; }
-        .rank.gold { color: #ffd700; }
-        .rank.silver { color: #c0c0c0; }
-        .rank.bronze { color: #cd7f32; }
+        .rank.gold { color: #ffd700; } .rank.silver { color: #c0c0c0; } .rank.bronze { color: #cd7f32; }
         .lb-user { flex: 1; margin-left: 8px; font-family: monospace; font-size: 12px; }
         .lb-value { font-weight: 700; color: #ffd700; }
-        .lb-reward { font-size: 10px; color: #ce93d8; margin-left: 6px; }
 
-        .section-title { font-size: 13px; font-weight: 700; color: #aaa;
-            text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; }
-        .achievements { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .ach { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 8px 4px;
-            text-align: center; border: 1px solid rgba(255,255,255,0.06); opacity: 0.4; transition: all 0.3s; }
-        .ach.unlocked { opacity: 1; border-color: rgba(255,215,0,0.4);
-            background: rgba(255,215,0,0.08); box-shadow: 0 0 12px rgba(255,215,0,0.2); }
-        .ach .icon { font-size: 24px; }
-        .ach .name { font-size: 10px; color: #ccc; margin-top: 2px; line-height: 1.2; }
+        /* Нижнее меню (Bottom Nav) */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(26, 18, 43, 0.95); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 10px 0 15px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; max-width: 440px; margin: 0 auto; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; font-size: 10px; cursor: pointer; transition: color 0.2s; }
+        .nav-item.active { color: #ffd700; }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
 
-        .status { font-size: 12px; color: #888; text-align: center; margin-top: 6px; min-height: 16px; }
-        .saved { color: #4CAF50; } .saving { color: #ffd700; } .error { color: #f44336; }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none;
-            align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        /* Модалки и уведомления */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
         .modal.active { display: flex; }
-        .modal-box { background: linear-gradient(135deg, #1e1533, #0f0a1e); border-radius: 20px;
-            padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(255,215,0,0.2); }
-        .modal-box h2 { margin: 0 0 12px; font-size: 20px; color: #ffd700; }
-        .modal-box p { font-size: 14px; color: #ccc; margin: 8px 0; }
-        .modal-box input { width: 100%; padding: 12px; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05);
-            color: #fff; font-size: 13px; margin: 10px 0; font-family: inherit; }
-        .modal-box .row { display: flex; gap: 8px; margin-top: 10px; }
-        .modal-box .row .btn { width: 50%; margin: 0; }
-        .btn-cancel { background: #333; color: #fff; }
-
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff;
-            padding: 12px 24px; border-radius: 30px; font-weight: 700; z-index: 2000;
-            transition: transform 0.4s; box-shadow: 0 8px 24px rgba(76,175,80,0.5); font-size: 14px; }
+        .modal-box { background: linear-gradient(135deg, #1e1533, #0f0a1e); border-radius: 20px; padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(255,215,0,0.2); text-align: center; }
+        .modal-box input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 13px; margin: 10px 0; font-family: inherit; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; padding: 12px 24px; border-radius: 30px; font-weight: 700; z-index: 3000; transition: transform 0.4s; box-shadow: 0 8px 24px rgba(76,175,80,0.5); font-size: 14px; text-align: center; }
         .toast.show { transform: translateX(-50%) translateY(0); }
-        .toast.achievement { background: linear-gradient(135deg, #ffd700, #ff9800); color: #1a1a2e; }
+        .status { font-size: 12px; color: #888; text-align: center; margin-top: 6px; min-height: 16px; }
+        .saved { color: #4CAF50; } .error { color: #f44336; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- ШАПКА С БАЛАНСОМ -->
         <div class="header"><h1>🐔 Пернатый Бизнес</h1></div>
-
         <div class="top-wallets">
             <div class="wallet">
                 <div class="wallet-label">🪙 Суета</div>
@@ -133,91 +112,104 @@
             <div class="wallet feather">
                 <div class="wallet-label">🪶 Перья</div>
                 <div class="wallet-value" id="feathers">0</div>
-                <span class="income-badge" id="feathers-hint" style="color:#ce93d8;">для вывода</span>
             </div>
         </div>
 
-        <div class="card farm-area">
-            <div class="bird" id="bird" onclick="tapBird()">🐔</div>
-            <div class="bird-name" id="bird-name">Курица</div>
-            <div class="energy-bar"><div class="energy-fill" id="energy-fill" style="width:100%"></div></div>
-            <div class="energy-text"><span id="energy-text">1000/1000</span> энергии</div>
+        <!-- 1. ВКЛАДКА ФЕРМА -->
+        <div id="tab-farm" class="tab-content">
+            <div class="card" style="text-align:center;">
+                <div class="bird" id="main-bird" onclick="tapBird()">🐔</div>
+                <div style="font-size:16px; font-weight:bold; margin-top:10px;">Курица</div>
+                <div class="energy-bar"><div class="energy-fill" id="energy-fill" style="width:100%"></div></div>
+                <div class="energy-text"><span id="energy-text">60/60</span> энергии</div>
+            </div>
+            <div class="card">
+                <button class="btn btn-primary" id="adBtn" onclick="watchAd()">📺 Смотреть рекламу (+80 суеты +2 🪶)</button>
+                <button class="btn btn-gold" onclick="feedBirds()">🍎 Покормить птиц (<span id="feed-cost">0</span> 🪙)</button>
+            </div>
         </div>
 
-        <div class="card">
-            <button class="btn btn-primary" id="adBtn" onclick="watchAd()">📺 Смотреть рекламу (+80 суеты +2 🪶)</button>
-            <button class="btn btn-daily" id="dailyBtn" onclick="claimDaily()">🎁 Ежедневный бонус</button>
+        <!-- 2. ВКЛАДКА ПТИЧНИК -->
+        <div id="tab-aviary" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">🐔 Твои птицы (<span id="birds-count">0</span>)</div>
+                <div id="aviary-list"></div>
+            </div>
         </div>
 
-        <div class="tabs">
-    <div class="tab active" onclick="switchTab('shop', this)">🛒 Магазин</div>
-    <div class="tab" onclick="switchTab('lb', this)">🏆 Лидеры</div>
-    <div class="tab" onclick="switchTab('ref', this)">👥 Друзья</div>
-        </div>
-
-        <div class="card" id="tab-shop">
-            <div class="section-title">Купить птиц</div>
-            <div class="shop-grid">
-                <div class="shop-item" id="shop-chicken">
-                    <div class="icon">🐔</div>
-                    <div class="name">Курица</div>
-                    <div class="price-s" onclick="buyBird('chicken','sueta')">500 🪙</div>
-                    <div class="price-f" onclick="buyBird('chicken','feather')">10 🪶</div>
-                    <div class="count" id="cnt-chicken"></div>
+        <!-- 3. ВКЛАДКА ИВЕНТЫ (Колесо и Задания) -->
+        <div id="tab-events" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">🎡 Колесо Фортуны</div>
+                <div class="wheel-container">
+                    <div class="wheel-icon" id="wheel-icon">🎰</div>
                 </div>
-                <div class="shop-item" id="shop-duck">
-                    <div class="icon">🦆</div>
-                    <div class="name">Утка</div>
-                    <div class="price-s" onclick="buyBird('duck','sueta')">5000 🪙</div>
-                    <div class="price-f" onclick="buyBird('duck','feather')">100 🪶</div>
-                    <div class="count" id="cnt-duck"></div>
-                </div>
-                <div class="shop-item" id="shop-goose">
-                    <div class="icon">🦢</div>
-                    <div class="name">Гусь</div>
-                    <div class="price-s" onclick="buyBird('goose','sueta')">25000 🪙</div>
-                    <div class="price-f" onclick="buyBird('goose','feather')">500 🪶</div>
-                    <div class="count" id="cnt-goose"></div>
+                <button class="btn btn-blue" id="spin-free-btn" onclick="spinWheel('free')">🎁 Бесплатный спин</button>
+                <button class="btn btn-purple" id="spin-ad-btn" onclick="spinWheel('ad')">📺 Крутить за рекламу</button>
+            </div>
+            <div class="card">
+                <div class="section-title">📋 Ежедневные Задания</div>
+                <div id="tasks-list"></div>
+            </div>
+        </div>
+
+        <!-- 4. ВКЛАДКА МАГАЗИН -->
+        <div id="tab-shop" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">🛒 Купить птиц</div>
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div class="icon">🐔</div><div class="name">Курица</div>
+                        <div class="price-s" onclick="buyBird('chicken','sueta')">500 🪙</div>
+                        <div class="price-f" onclick="buyBird('chicken','feather')">10 🪶</div>
+                    </div>
+                    <div class="shop-item">
+                        <div class="icon">🦆</div><div class="name">Утка</div>
+                        <div class="price-s" onclick="buyBird('duck','sueta')">5000 🪙</div>
+                        <div class="price-f" onclick="buyBird('duck','feather')">100 🪶</div>
+                    </div>
+                    <div class="shop-item">
+                        <div class="icon">🦢</div><div class="name">Гусь</div>
+                        <div class="price-s" onclick="buyBird('goose','sueta')">25000 🪙</div>
+                        <div class="price-f" onclick="buyBird('goose','feather')">500 🪶</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card" id="tab-lb" style="display:none;">
-            <div class="section-title">🏆 Топ недели по суете</div>
-            <div id="lb-sueta"></div>
-            <div class="section-title" style="margin-top:14px;">🐔 Топ по покупкам птиц</div>
-            <div id="lb-birds"></div>
-        </div>
-        <div class="card" id="tab-ref" style="display:none;">
-    <div class="section-title">👥 Приглашай друзей</div>
-    <p style="font-size:13px;color:#ccc;margin:0 0 8px;">
-        За каждого друга — <b>+500 суеты</b> и <b>+10 перьев</b>.
-    </p>
-    <div id="ref-link" style="font-size:12px;word-break:break-all;background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;margin:8px 0;font-family:monospace;"></div>
-    <button class="btn btn-gold" onclick="copyRefLink()">📋 Скопировать ссылку</button>
-    <div class="section-title" style="margin-top:14px;">📊 Статистика</div>
-    <div id="ref-stats" style="font-size:14px;line-height:1.8;"></div>
-        </div>
-
-        <div class="card">
-            <div class="section-title">🏆 Достижения</div>
-            <div class="achievements" id="achievements"></div>
+        <!-- 5. ВКЛАДКА БАНК (Вывод и Рефералка) -->
+        <div id="tab-bank" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">💸 Вывод средств</div>
+                <p style="font-size:13px; color:#ccc; margin-bottom:10px;">1 TON = 1000 перьев. Минимум 100 перьев.</p>
+                <button class="btn btn-withdraw" onclick="openWithdraw()">Вывести TON</button>
+            </div>
+            <div class="card">
+                <div class="section-title">👥 Приглашай друзей</div>
+                <p style="font-size:13px; color:#ccc;">За друга: <b>+500 суеты и +10 перьев</b>.</p>
+                <div id="ref-link" style="font-size:11px; word-break:break-all; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin:8px 0; font-family:monospace;"></div>
+                <button class="btn btn-gold" onclick="copyRefLink()">📋 Скопировать</button>
+                <div id="ref-stats" style="font-size:13px; margin-top:10px;"></div>
+            </div>
         </div>
 
-        <div class="card">
-            <button class="btn btn-withdraw" onclick="openWithdraw()">💸 Вывести TON</button>
-            <div class="status" id="status"></div>
+        <!-- НИЖНЕЕ МЕНЮ -->
+        <div class="bottom-nav">
+            <div class="nav-item active" id="nav-farm" onclick="switchTab('farm')"><div class="nav-icon">🏠</div>Ферма</div>
+            <div class="nav-item" id="nav-aviary" onclick="switchTab('aviary')"><div class="nav-icon">🐔</div>Птичник</div>
+            <div class="nav-item" id="nav-events" onclick="switchTab('events')"><div class="nav-icon">🎡</div>Ивенты</div>
+            <div class="nav-item" id="nav-shop" onclick="switchTab('shop')"><div class="nav-icon">🛒</div>Магазин</div>
+            <div class="nav-item" id="nav-bank" onclick="switchTab('bank')"><div class="nav-icon">🏦</div>Банк</div>
         </div>
     </div>
 
+    <!-- Модалка вывода -->
     <div class="modal" id="withdrawModal">
         <div class="modal-box">
             <h2>💸 Вывод TON</h2>
-            <p id="wd-info">Перьев: ...</p>
-            <p style="font-size:12px;color:#888;">Минимум: 100 🪶 = 0.1 TON</p>
-            <input type="text" id="wd-wallet" placeholder="Адрес TON-кошелька (UQ... или EQ...)" />
-            <div class="row">
-                <button class="btn btn-cancel" onclick="closeWithdraw()">Отмена</button>
+            <input type="text" id="wd-wallet" placeholder="Адрес TON-кошелька (UQ...)" />
+            <div style="display:flex; gap:8px;">
+                <button class="btn" style="background:#444;" onclick="closeWithdraw()">Отмена</button>
                 <button class="btn btn-withdraw" id="wd-submit" onclick="submitWithdraw()">Отправить</button>
             </div>
             <div class="status" id="wd-status"></div>
@@ -229,386 +221,387 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); tg.ready();
+        
+        // ==============================================================
+        // ⚠️ ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ
         const API = "https://pernatiubiznes.mitrasa355.workers.dev";
-        const BOT_USERNAME = "Pernatiu_biznes_bot"; // ← твой username бота
+        const BOT_USERNAME = "Pernatiu_biznes_bot"; // Твой юзернейм (без @)
+        const BLOCK_ID = "54253"; // ID рекламного блока
+        // ==============================================================
+
         const userId = tg.initDataUnsafe?.user?.id || "guest";
-        const AD_LIMIT = 10;
+        const AD_LIMIT = 20;
         const MIN_FEATHERS = 100;
-        const FEATHERS_PER_TON = 1000;
-        const ENERGY_BASE = 60;
-const ENERGY_RECOVER_SEC = 60; // 1 энергия в минуту
-const ENERGY_PER_BIRD = { chicken: 2, duck: 10, goose: 40 };
-
-function calcMaxEnergy() {
-    let max = ENERGY_BASE;
-    for (const key in userData.birds) {
-        if (ENERGY_PER_BIRD[key]) max += ENERGY_PER_BIRD[key] * userData.birds[key];
-    }
-    return max;
-}
-
-        // ⚠️ ЗАМЕНИТЕ НА НОВЫЙ ID БЛОКА ИЗ ADSGRAM ПОСЛЕ ОДОБРЕНИЯ МОДЕРАЦИИ
-        const BLOCK_ID = "54253"; 
+        const ENERGY_RECOVER_MIN = 60; // 1 энергия в минуту
 
         const BIRDS = {
-            chicken: { name: "🐔 Курица", priceS: 500,   priceF: 10,  income: 10  },
-            duck:    { name: "🦆 Утка",   priceS: 5000,  priceF: 100, income: 50  },
-            goose:   { name: "🦢 Гусь",   priceS: 25000, priceF: 500, income: 200 }
+            chicken: { name: "🐔 Курица", priceS: 500, priceF: 10, income: 10, feedCost: 5 },
+            duck: { name: "🦆 Утка", priceS: 5000, priceF: 100, income: 50, feedCost: 25 },
+            goose: { name: "🦢 Гусь", priceS: 25000, priceF: 500, income: 200, feedCost: 100 }
         };
 
-        const ACHIEVEMENTS = [
-            { id: "first_bird",  icon: "🐣", name: "Первая птица", check: d => totalBirds(d) >= 1,  reward: { s: 100, f: 2 } },
-            { id: "ten_birds",   icon: "🐥", name: "Птичий двор",  check: d => totalBirds(d) >= 10, reward: { s: 500, f: 5 } },
-            { id: "fifty_birds", icon: "🦅", name: "Фермер",       check: d => totalBirds(d) >= 50, reward: { s: 2000, f: 15 } },
-            { id: "rich_10k",    icon: "💰", name: "10K суеты",    check: d => d.balance >= 10000, reward: { s: 1000, f: 5 } },
-            { id: "rich_100k",   icon: "💎", name: "100K суеты",   check: d => d.balance >= 100000, reward: { s: 5000, f: 20 } },
-            { id: "tapper",      icon: "👆", name: "100 тапов",    check: d => d.totalTaps >= 100, reward: { s: 200, f: 3 } }
-        ];
-
-        let userData = {
-            balance: 0, feathers: 0,
-            birds: { chicken: 0, duck: 0, goose: 0 },
-            lastDailyBonus: 0, dailyStreak: 0, achievements: [],
-            totalTaps: 0, totalEarned: 0,
-            energy: 1000, energyUpdatedAt: Date.now(),
-            adsToday: 0, adsDate: new Date().toDateString(),
-            weeklySueta: 0, weeklyBirds: 0,
-            lastSeen: Date.now(),
-            userName: "Игрок", username: ""
-        };
-
+        let userData = {}; 
         let lastSync = 0;
 
-        function totalBirds(d) {
-            return (d.birds?.chicken || 0) + (d.birds?.duck || 0) + (d.birds?.goose || 0);
-        }
-        function showToast(text, type) {
+        // === УТИЛИТЫ ===
+        function showToast(text) {
             const t = document.getElementById('toast');
-            t.textContent = text;
-            t.className = 'toast show ' + (type || '');
-            setTimeout(() => t.className = 'toast ' + (type || ''), 2500);
+            t.innerHTML = text;
+            t.className = 'toast show';
+            setTimeout(() => t.className = 'toast', 3000);
+        }
+        function setStatus(id, text, cls) {
+            const el = document.getElementById(id);
+            if(el) { el.textContent = text; el.className = 'status ' + (cls || ''); }
         }
 
+        // === ЗАГРУЗКА И СОХРАНЕНИЕ ===
         async function loadFromServer() {
-            setStatus("Загрузка...", "");
             try {
                 const r = await fetch(API + "/balance?user=" + userId);
-                const data = await r.json();
-                userData = { ...userData, ...data };
-                if (userData.adsDate !== new Date().toDateString()) {
-                    userData.adsToday = 0;
-                    userData.adsDate = new Date().toDateString();
-                }
-                recalcEnergy();
-                if (userData.lastSeen) {
-                    const hours = Math.min((Date.now() - userData.lastSeen) / 1000 / 3600, 24);
-                    const inc = calculateIncome() * hours;
-                    if (inc > 0) userData.balance += Math.floor(inc);
-                }
-                userData.lastSeen = Date.now();
+                userData = await r.json();
                 updateUI();
-                setStatus("✅ Данные загружены", "saved");
-            } catch (e) {
-                setStatus("⚠️ Оффлайн режим", "error");
-            }
+                setStatus('status', "✅ Данные загружены", "saved");
+            } catch (e) { setStatus('status', "⚠️ Оффлайн режим", "error"); }
         }
 
         async function saveToServer() {
-            userData.lastSeen = Date.now();
-            setStatus("Сохранение...", "saving");
+            userData.userName = tg.initDataUnsafe?.user?.first_name || "Игрок";
+            userData.username = tg.initDataUnsafe?.user?.username || "";
             try {
-                const r = await fetch(API + "/update", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userId, balance: Math.floor(userData.balance),
-                        feathers: userData.feathers,
-                        birds: userData.birds,
-                        lastDailyBonus: userData.lastDailyBonus,
-                        dailyStreak: userData.dailyStreak,
-                        achievements: userData.achievements,
-                        totalTaps: userData.totalTaps,
-                        totalEarned: userData.totalEarned,
-                        energy: userData.energy,
-                        energyUpdatedAt: userData.energyUpdatedAt,
-                        weeklySueta: userData.weeklySueta,
-                        weeklyBirds: userData.weeklyBirds,
-                        userName: tg.initDataUnsafe?.user?.first_name || "Игрок",
-                        username: tg.initDataUnsafe?.user?.username || ""
-                    })
+                await fetch(API + "/update", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userData)
                 });
-                if (r.ok) { lastSync = Date.now(); setStatus("✅ Сохранено", "saved"); }
-            } catch (e) { setStatus("⚠️ Нет связи", "error"); }
+                lastSync = Date.now();
+            } catch (e) {}
         }
 
-        function calculateIncome() {
-            let total = 0;
-            for (const k in userData.birds) if (BIRDS[k]) total += BIRDS[k].income * userData.birds[k];
-            return total;
-        }
-
-        function recalcEnergy() {
+        // === ЛОГИКА ПТИЦ (Клиентская часть для UI) ===
+        function calcBirdIncome(bird) {
+            const base = BIRDS[bird.type]?.income || 0;
             const now = Date.now();
-            const secs = Math.floor((now - (userData.energyUpdatedAt || now)) / 1000);
-            const gained = Math.floor(secs / ENERGY_RECOVER_SEC);
-            if (gained > 0) {
-                userData.energy = Math.min(calcMaxEnergy(), (userData.energy || 0) + gained);
-                userData.energyUpdatedAt = now;
-            }
+            // Старение: -0.5% в день (мин 20%)
+            const ageDays = (now - bird.birth) / (1000 * 60 * 60 * 24);
+            let ageMult = Math.max(0.2, 1 - (ageDays * 0.005));
+            // Голод
+            const hoursHungry = (now - bird.lastFed) / (1000 * 60 * 60);
+            let hungerMult = 1.0;
+            if (hoursHungry > 24) hungerMult = 0.2;
+            else if (hoursHungry > 12) hungerMult = 0.5;
+            
+            return { income: base * ageMult * hungerMult, ageDays, hunger: hoursHungry };
         }
 
+        function calculateTotalIncome() {
+            if(!userData.birds) return 0;
+            return userData.birds.reduce((sum, bird) => sum + calcBirdIncome(bird).income, 0);
+        }
+
+        function calcMaxEnergy() {
+            let max = 60;
+            if(userData.birds) {
+                max += userData.birds.filter(b=>b.type==='chicken').length * 2;
+                max += userData.birds.filter(b=>b.type==='duck').length * 10;
+                max += userData.birds.filter(b=>b.type==='goose').length * 40;
+            }
+            return max;
+        }
+
+        function calcFeedCost() {
+            if(!userData.birds) return 0;
+            return userData.birds.reduce((sum, b) => sum + (BIRDS[b.type]?.feedCost || 0), 0);
+        }
+
+        // === ОТРИСОВКА UI ===
         function updateUI() {
-            recalcEnergy();
+            if(!userData.balance) userData.balance = 0;
             document.getElementById('balance').textContent = Math.floor(userData.balance).toLocaleString('ru-RU');
             document.getElementById('feathers').textContent = Math.floor(userData.feathers || 0);
-            const inc = calculateIncome();
-            document.getElementById('income').textContent = '+' + inc + '/час';
-
+            
+            // Энергия
             const maxE = calcMaxEnergy();
-const enPct = ((userData.energy || 0) / maxE) * 100;
-document.getElementById('energy-fill').style.width = enPct + '%';
-document.getElementById('energy-text').textContent = Math.floor(userData.energy || 0) + '/' + maxE;
-            for (const key in BIRDS) {
-                const cnt = userData.birds[key] || 0;
-                const el = document.getElementById('cnt-' + key);
-                if (el) el.textContent = cnt > 0 ? '×' + cnt : '';
-            }
-            renderAchievements();
+            const enPct = Math.min(100, (userData.energy / maxE) * 100);
+            document.getElementById('energy-fill').style.width = enPct + '%';
+            document.getElementById('energy-text').textContent = Math.floor(userData.energy) + '/' + maxE;
+            
+            // Доход и Кормление
+            document.getElementById('income').textContent = '+' + Math.floor(calculateTotalIncome()) + '/час';
+            const feedCost = calcFeedCost();
+            document.getElementById('feed-cost').textContent = feedCost;
+            document.getElementById('feed-cost').style.color = (userData.balance < feedCost) ? '#ff5722' : '#fff';
+
+            renderAviary();
+            renderTasks();
+            renderReferrals();
         }
 
-        function renderAchievements() {
-            const container = document.getElementById('achievements');
-            let html = '';
-            for (const ach of ACHIEVEMENTS) {
-                const unlocked = userData.achievements.includes(ach.id) || ach.check(userData);
-                if (unlocked && !userData.achievements.includes(ach.id)) {
-                    userData.achievements.push(ach.id);
-                    userData.balance += ach.reward.s;
-                    userData.feathers = (userData.feathers || 0) + ach.reward.f;
-                    setTimeout(() => showToast('🏆 ' + ach.name + '! +' + ach.reward.s + '🪙 +' + ach.reward.f + '🪶', 'achievement'), 500);
-                    saveToServer();
-                }
-                html += `<div class="ach ${unlocked ? 'unlocked' : ''}">
-                    <div class="icon">${ach.icon}</div>
-                    <div class="name">${ach.name}</div>
-                </div>`;
+        function renderAviary() {
+            const list = document.getElementById('aviary-list');
+            document.getElementById('birds-count').textContent = userData.birds ? userData.birds.length : 0;
+            if (!userData.birds || userData.birds.length === 0) {
+                list.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">У тебя пока нет птиц. Купи их в магазине!</div>';
+                return;
             }
+            let html = '';
+            // Сортируем по типу
+            const sorted = [...userData.birds].sort((a,b) => a.type.localeCompare(b.type));
+            sorted.forEach(bird => {
+                const info = BIRDS[bird.type];
+                const stats = calcBirdIncome(bird);
+                let statusClass = 'aviary-item';
+                let statusText = 'Сытая ✅';
+                if (stats.hunger > 24) { statusClass += ' starving'; statusText = 'Голодает 🚨'; }
+                else if (stats.hunger > 12) { statusClass += ' hungry'; statusText = 'Голодная ⚠️'; }
+
+                html += `<div class="${statusClass}">
+                    <div class="aviary-icon">${info.name.split(' ')[0]}</div>
+                    <div class="aviary-info">
+                        <div class="aviary-title">${info.name.split(' ')[1]} <span style="font-size:10px;color:#aaa;">(${Math.floor(stats.ageDays)} дн.)</span></div>
+                        <div class="aviary-stats">Доход: +${stats.income.toFixed(1)}/ч</div>
+                        <div class="aviary-stats" style="color: ${stats.hunger > 12 ? '#ff9800' : '#4CAF50'}">${statusText}</div>
+                    </div>
+                </div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasks-list');
+            if (!userData.tasks) return;
+            const tasksDef = [
+                { id: 'taps', title: 'Сделать 500 тапов', curr: userData.tasks.taps || 0, max: 500, reward: '+150 🪙 +1 🪶' },
+                { id: 'birds', title: 'Купить 3 птицы', curr: userData.tasks.birdsBought || 0, max: 3, reward: '+300 🪙 +1 🪶' },
+                { id: 'ads', title: 'Посмотреть 3 рекламы', curr: userData.tasks.adsWatched || 0, max: 3, reward: '+100 🪙 +2 🪶' }
+            ];
+            let html = '';
+            tasksDef.forEach(t => {
+                const claimed = userData.tasks.claimed.includes(t.id);
+                const done = t.curr >= t.max;
+                html += `<div class="task-item">
+                    <div class="task-info">
+                        <div class="task-title">${t.title}</div>
+                        <div class="task-progress">${Math.min(t.curr, t.max)} / ${t.max} • ${t.reward}</div>
+                    </div>
+                    <button class="btn" style="width:80px; padding:8px; margin:0; font-size:12px; ${done && !claimed ? 'background:#4CAF50;' : 'background:#333;'}"
+                        onclick="claimTask('${t.id}')" ${(!done || claimed) ? 'disabled' : ''}>
+                        ${claimed ? 'Получено' : (done ? 'Забрать' : 'В процессе')}
+                    </button>
+                </div>`;
+            });
             container.innerHTML = html;
         }
 
-        function setStatus(t, c) {
-            const el = document.getElementById('status');
-            el.textContent = t; el.className = 'status ' + (c || '');
+        function renderReferrals() {
+            if(!document.getElementById('ref-link')) return;
+            document.getElementById('ref-link').textContent = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+            const stats = document.getElementById('ref-stats');
+            const count = userData.referrals ? userData.referrals.length : 0;
+            stats.innerHTML = `👥 Приглашено: <b>${count}</b><br>💰 Заработано с друзей: <b>${userData.refBonus || 0}</b> суеты`;
+        }
+
+        // === ДЕЙСТВИЯ ===
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).style.display = 'block';
+            document.getElementById('nav-' + tabId).classList.add('active');
+            if(tabId === 'events') renderTasks(); // обновить задания
         }
 
         function tapBird() {
-            if ((userData.energy || 0) <= 0) {
-                tg.showAlert('Энергия закончилась! Восстанавливается 1 ед. за 10 сек.');
-                return;
-            }
+            if (userData.energy <= 0) { tg.showAlert('Энергия закончилась! Восстанавливается 1 ед. в минуту.'); return; }
             userData.energy -= 1;
             userData.balance += 1;
             userData.totalTaps = (userData.totalTaps || 0) + 1;
             userData.weeklySueta = (userData.weeklySueta || 0) + 1;
-            userData.energyUpdatedAt = userData.energyUpdatedAt || Date.now();
+            if (userData.tasks) userData.tasks.taps = (userData.tasks.taps || 0) + 1;
+            
             updateUI();
             tg.HapticFeedback?.impactOccurred('light');
+            if(userData.tasks && userData.tasks.taps % 10 === 0) renderTasks(); // обновляем задания каждые 10 тапов
         }
 
-        function buyBird(type, currency) {
-            const bird = BIRDS[type];
-            if (!bird) return;
-            const price = currency === 'sueta' ? bird.priceS : bird.priceF;
-            const wallet = currency === 'sueta' ? 'balance' : 'feathers';
-            if ((userData[wallet] || 0) < price) {
-                tg.showAlert('Недостаточно ' + (currency === 'sueta' ? 'суеты' : 'перьев'));
-                return;
+        async function buyBird(type, currency) {
+            if(currency === 'sueta' && userData.balance < BIRDS[type].priceS) return tg.showAlert('Мало суеты!');
+            if(currency === 'feather' && userData.feathers < BIRDS[type].priceF) return tg.showAlert('Мало перьев!');
+            
+            try {
+                const r = await fetch(API + "/buy_bird", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, type, currency })
+                });
+                if(r.ok) {
+                    const data = await r.json();
+                    userData = data;
+                    showToast(`Куплено: ${BIRDS[type].name}`);
+                    updateUI();
+                    tg.HapticFeedback?.impactOccurred('medium');
+                }
+            } catch(e) { tg.showAlert('Ошибка сети'); }
+        }
+
+        async function feedBirds() {
+            const cost = calcFeedCost();
+            if (cost === 0) return tg.showAlert('Нет птиц для кормления');
+            if (userData.balance < cost) return tg.showAlert('Не хватает суеты для корма!');
+            
+            try {
+                const r = await fetch(API + "/feed", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId })
+                });
+                const res = await r.json();
+                if (res.ok) {
+                    userData.balance = res.balance;
+                    // Локально обновляем время кормления у всех птиц
+                    userData.birds.forEach(b => b.lastFed = Date.now());
+                    showToast(`🍎 Птицы накормлены! Потрачено ${res.cost} суеты.`);
+                    updateUI(); saveToServer();
+                } else { tg.showAlert(res.error); }
+            } catch(e) { tg.showAlert('Ошибка сети'); }
+        }
+
+        async function spinWheel(type) {
+            const btn = document.getElementById(type === 'free' ? 'spin-free-btn' : 'spin-ad-btn');
+            const icon = document.getElementById('wheel-icon');
+            
+            btn.disabled = true;
+            icon.style.transition = 'transform 3s ease-out';
+            icon.style.transform = `rotate(${1800 + Math.random() * 360}deg)`;
+
+            if (type === 'ad') {
+                if (!AdController) { tg.showAlert('Реклама не загружена'); btn.disabled = false; return; }
+                try { await AdController.show(); } 
+                catch(e) { btn.disabled = false; icon.style.transform = 'rotate(0)'; return; }
             }
-            userData[wallet] -= price;
-            userData.birds[type] = (userData.birds[type] || 0) + 1;
-            userData.weeklyBirds = (userData.weeklyBirds || 0) + 1;
-            updateUI(); saveToServer();
-            tg.HapticFeedback?.impactOccurred('medium');
-            showToast(bird.name + ' куплена!');
-        }
 
-        function claimDaily() {
-            const hours = (Date.now() - (userData.lastDailyBonus || 0)) / 3600000;
-            if (hours < 20) {
-                tg.showAlert('Бонус через ' + Math.ceil(20 - hours) + ' ч.');
-                return;
+            try {
+                const r = await fetch(API + "/spin", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, type })
+                });
+                const res = await r.json();
+                
+                setTimeout(() => {
+                    if(res.ok) {
+                        userData = res.data;
+                        showToast(`🎉 Выигрыш: ${res.prize}!`);
+                        updateUI();
+                    } else {
+                        tg.showAlert(res.error);
+                    }
+                    btn.disabled = false;
+                    icon.style.transition = 'none';
+                    icon.style.transform = 'rotate(0)';
+                }, 3000); // Ждем окончания анимации
+            } catch(e) {
+                btn.disabled = false;
+                icon.style.transition = 'none';
+                icon.style.transform = 'rotate(0)';
             }
-            if (hours > 48) userData.dailyStreak = 0;
-            userData.dailyStreak = Math.min((userData.dailyStreak || 0) + 1, 7);
-            const s = userData.dailyStreak * 10;
-            const f = userData.dailyStreak;
-            userData.balance += s;
-            userData.feathers = (userData.feathers || 0) + f;
-            userData.lastDailyBonus = Date.now();
-            updateUI(); saveToServer();
-            tg.HapticFeedback?.notificationOccurred('success');
-            showToast('🎁 День ' + userData.dailyStreak + ': +' + s + '🪙 +' + f + '🪶');
         }
 
+        async function claimTask(taskId) {
+            try {
+                const r = await fetch(API + "/claim_task", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, taskId })
+                });
+                const res = await r.json();
+                if(res.ok) {
+                    userData.balance += res.rewardS;
+                    userData.feathers += res.rewardF;
+                    userData.tasks.claimed.push(taskId);
+                    showToast(`✅ Задание выполнено! +${res.rewardS}🪙 +${res.rewardF}🪶`);
+                    updateUI(); saveToServer();
+                } else { tg.showAlert(res.error); }
+            } catch(e) { tg.showAlert('Ошибка сети'); }
+        }
+
+        function copyRefLink() {
+            const link = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
+            navigator.clipboard.writeText(link).then(() => showToast('📋 Ссылка скопирована!'));
+        }
+
+        // === ВЫВОД ===
+        function openWithdraw() {
+            if (userData.feathers < MIN_FEATHERS) return tg.showAlert('Минимум ' + MIN_FEATHERS + ' перьев');
+            document.getElementById('withdrawModal').classList.add('active');
+        }
+        function closeWithdraw() { document.getElementById('withdrawModal').classList.remove('active'); }
+        async function submitWithdraw() {
+            const wallet = document.getElementById('wd-wallet').value.trim();
+            if (!wallet || wallet.length < 40) return setStatus('wd-status', '⚠️ Проверь адрес', 'error');
+            
+            document.getElementById('wd-submit').disabled = true;
+            setStatus('wd-status', 'Отправка...', '');
+            try {
+                const r = await fetch(API + "/withdraw", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, wallet, feathers: Math.floor(userData.feathers) })
+                });
+                const res = await r.json();
+                if (res.ok) {
+                    setStatus('wd-status', '✅ Заявка создана!', 'saved');
+                    userData.feathers = 0; updateUI(); saveToServer();
+                    setTimeout(closeWithdraw, 2000);
+                } else { setStatus('wd-status', res.error, 'error'); }
+            } catch (e) { setStatus('wd-status', '⚠️ Нет связи', 'error'); }
+            finally { document.getElementById('wd-submit').disabled = false; }
+        }
+
+        // === РЕКЛАМА ADSGRAM ===
         let AdController = null;
         try { if (window.Adsgram) AdController = window.Adsgram.init({ blockId: BLOCK_ID }); } catch (e) {}
 
         async function watchAd() {
-            const btn = document.getElementById('adBtn');
-            if (userData.adsToday >= AD_LIMIT) { tg.showAlert('Лимит рекламы: ' + AD_LIMIT + '/день'); return; }
-            if (!AdController) { tg.showAlert('Реклама не загрузилась'); return; }
-            btn.disabled = true;
+            if (!AdController) return tg.showAlert('Реклама не загрузилась');
+            
+            document.getElementById('adBtn').disabled = true;
             try {
                 await AdController.show();
+                // Начисляем награду локально и сохраняем (сервер проверит при следующем запросе)
                 userData.balance += 80;
                 userData.feathers = (userData.feathers || 0) + 2;
                 userData.weeklySueta = (userData.weeklySueta || 0) + 80;
-                userData.adsToday++;
+                if(userData.tasks) userData.tasks.adsWatched = (userData.tasks.adsWatched || 0) + 1;
+                
                 updateUI(); saveToServer();
                 showToast('📺 +80🪙 +2🪶');
-            } catch (e) { setStatus("Реклама не показалась", "error"); }
-            finally { btn.disabled = false; }
+            } catch (e) { showToast('Реклама не показалась'); }
+            finally { document.getElementById('adBtn').disabled = false; }
         }
 
-        function switchTab(name, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('tab-shop').style.display = name === 'shop' ? 'block' : 'none';
-    document.getElementById('tab-lb').style.display = name === 'lb' ? 'block' : 'none';
-    document.getElementById('tab-ref').style.display = name === 'ref' ? 'block' : 'none';
-    if (name === 'lb') loadLeaderboard();
-    if (name === 'ref') loadReferrals();
-        }
-
-        async function loadLeaderboard() {
-            const rewards = [50, 30, 20, 5, 5, 5, 5, 5, 5, 5];
-            try {
-                const [r1, r2] = await Promise.all([
-                    fetch(API + "/leaderboard?type=sueta").then(r => r.json()),
-                    fetch(API + "/leaderboard?type=birds").then(r => r.json())
-                ]);
-                document.getElementById('lb-sueta').innerHTML = renderLB(r1, rewards, "🪙", v => v + " суеты");
-                document.getElementById('lb-birds').innerHTML = renderLB(r2, rewards, "🐔", v => v + " птиц");
-            } catch (e) { console.log(e); }
-        }
-
-        function renderLB(arr, rewards, unit, fmt) {
-            if (!arr || !arr.length) return '<p style="color:#888;font-size:13px;">Пока никого нет</p>';
-            const medals = ['🥇','🥈','🥉'];
-            let html = '';
-            arr.forEach((row, i) => {
-                const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-                const isMe = String(row.userId) === String(userId);
-                const medal = medals[i] || (i + 1);
-                const reward = rewards[i] || 0;
-                const displayName = isMe ? 'Ты' : (row.username ? '@' + row.username : (row.userName || 'Игрок'));
-                html += `<div class="leaderboard-row ${isMe ? 'me' : ''}">
-                    <div class="rank ${rankClass}">${medal}</div>
-                    <div class="lb-user">${displayName}</div>
-                    <div class="lb-value">${fmt(row.value)}</div>
-                    ${reward ? `<div class="lb-reward">+${reward}🪶</div>` : ''}
-                </div>`;
-            });
-            return html;
-        }
-
-        function openWithdraw() {
-            if ((userData.feathers || 0) < MIN_FEATHERS) {
-                tg.showAlert('Минимум ' + MIN_FEATHERS + ' перьев');
-                return;
+        // === ТИКИ И АВТОСОХРАНЕНИЕ ===
+        setInterval(() => {
+            // Восстановление энергии локально для плавности UI
+            const now = Date.now();
+            if (userData.energyUpdatedAt) {
+                const minsPassed = Math.floor((now - userData.energyUpdatedAt) / 1000 / 60);
+                if (minsPassed > 0) {
+                    userData.energy = Math.min(calcMaxEnergy(), userData.energy + minsPassed);
+                    userData.energyUpdatedAt = now;
+                }
             }
-            document.getElementById('wd-info').textContent = 'У тебя ' + Math.floor(userData.feathers) + ' 🪶 (' + (userData.feathers / FEATHERS_PER_TON).toFixed(4) + ' TON)';
-            document.getElementById('wd-wallet').value = '';
-            document.getElementById('wd-status').textContent = '';
-            document.getElementById('withdrawModal').classList.add('active');
-        }
-        function closeWithdraw() { document.getElementById('withdrawModal').classList.remove('active'); }
-
-        async function submitWithdraw() {
-            const wallet = document.getElementById('wd-wallet').value.trim();
-            const st = document.getElementById('wd-status');
-            const btn = document.getElementById('wd-submit');
-            if (!wallet || wallet.length < 40) { st.textContent = '⚠️ Проверь адрес'; st.className = 'status error'; return; }
-            if ((userData.feathers || 0) < MIN_FEATHERS) { st.textContent = '⚠️ Мало перьев'; st.className = 'status error'; return; }
-            const feathers = Math.floor(userData.feathers);
-            btn.disabled = true;
-            st.textContent = 'Отправка...'; st.className = 'status saving';
-            try {
-                const r = await fetch(API + "/withdraw", {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId, wallet, feathers })
-                });
-                const res = await r.json();
-                if (r.ok && res.ok) {
-                    st.textContent = '✅ Заявка создана!'; st.className = 'status saved';
-                    userData.feathers = 0;
-                    updateUI(); saveToServer();
-                    setTimeout(closeWithdraw, 2500);
-                } else { st.textContent = '⚠️ ' + (res.error || 'Ошибка'); st.className = 'status error'; }
-            } catch (e) { st.textContent = '⚠️ Нет связи'; st.className = 'status error'; }
-            finally { btn.disabled = false; }
-        }
-
-        function tick() {
-            const inc = calculateIncome();
+            // Пассивный доход локально
+            const inc = calculateTotalIncome();
             if (inc > 0) userData.balance += inc / 3600;
-            recalcEnergy();
+            
             updateUI();
-        }
-        function autoSave() { if (Date.now() - lastSync > 25000) saveToServer(); }
-        function getRefLink() {
-    return "https://t.me/" + BOT_USERNAME + "?start=ref_" + userId;
-}
+        }, 1000);
 
-function copyRefLink() {
-    const link = getRefLink();
-    navigator.clipboard.writeText(link).then(() => {
-        showToast('📋 Ссылка скопирована!');
-    }).catch(() => {
-        tg.showAlert('Ссылка: ' + link);
-    });
-}
+        setInterval(() => { if (Date.now() - lastSync > 25000) saveToServer(); }, 30000);
 
-async function loadReferrals() {
-    document.getElementById('ref-link').textContent = getRefLink();
-    const stats = document.getElementById('ref-stats');
-    stats.innerHTML = 'Загрузка...';
-    try {
-        const r = await fetch(API + "/referrals?user=" + userId);
-        const data = await r.json();
-        let html = `<div>👥 Приглашено: <b>${data.count || 0}</b></div>`;
-        html += `<div>💰 Заработано с друзей: <b>${data.refBonus || 0}</b> суеты</div>`;
-        if (data.referrals && data.referrals.length > 0) {
-            html += '<div style="margin-top:8px;font-size:12px;color:#aaa;">Твои друзья:</div>';
-            data.referrals.slice(-5).reverse().forEach(ref => {
-                const name = ref.username ? '@' + ref.username : (ref.userName || 'Игрок');
-                html += `<div style="font-size:12px;color:#ccc;padding:4px 0;">• ${name}</div>`;
-            });
-        }
-        stats.innerHTML = html;
-    } catch (e) {
-        stats.innerHTML = '⚠️ Ошибка загрузки';
-    }
-            }
-
+        // === СТАРТ ===
         (async () => {
             await loadFromServer();
-            setInterval(tick, 1000);
-            setInterval(autoSave, 30000);
+            await saveToServer(); // Сохраняем имя при заходе
+            renderTasks();
         })();
 
         window.addEventListener('beforeunload', () => {
-            const blob = new Blob([JSON.stringify({
-                userId, balance: Math.floor(userData.balance),
-                feathers: userData.feathers, birds: userData.birds,
-                lastDailyBonus: userData.lastDailyBonus, dailyStreak: userData.dailyStreak,
-                achievements: userData.achievements, totalTaps: userData.totalTaps,
-                totalEarned: userData.totalEarned, energy: userData.energy,
-                energyUpdatedAt: userData.energyUpdatedAt,
-                weeklySueta: userData.weeklySueta, weeklyBirds: userData.weeklyBirds,
-                userName: tg.initDataUnsafe?.user?.first_name || "Игрок",
-                username: tg.initDataUnsafe?.user?.username || ""
-            })], { type: 'application/json' });
+            const blob = new Blob([JSON.stringify(userData)], { type: 'application/json' });
             navigator.sendBeacon(API + "/update", blob);
         });
     </script>
