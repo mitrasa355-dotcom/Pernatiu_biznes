@@ -10,13 +10,13 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(ellipse at top, #2d1b4e 0%, #0f0a1e 60%); color: #fff; margin: 0; padding: 12px 12px 90px; min-height: 100vh; overflow-x: hidden; }
         .container { max-width: 440px; margin: 0 auto; }
-        
+
         .header { text-align: center; margin-bottom: 12px; }
         .header h1 { font-size: 22px; margin: 0; background: linear-gradient(90deg, #ffd700, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .card { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
         .section-title { font-size: 13px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center;}
         .info-icon { cursor: pointer; font-size: 16px; color: #ffd700; }
-        
+
         .top-wallets { display: flex; gap: 8px; margin-bottom: 12px; }
         .wallet { flex: 1; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,152,0,0.05)); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.2); }
         .wallet.feather { background: linear-gradient(135deg, rgba(156,39,176,0.2), rgba(103,58,183,0.08)); border-color: rgba(156,39,176,0.3); }
@@ -34,9 +34,12 @@
         .btn-withdraw { background: linear-gradient(135deg, #ff5722, #d32f2f); color: #fff; }
         .btn-blue { background: linear-gradient(135deg, #2196F3, #1976D2); color: #fff; }
 
+        .bird-zone { position: relative; }
         .bird { font-size: 90px; cursor: pointer; user-select: none; display: inline-block; transition: transform 0.08s; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4)); animation: bob 2.5s ease-in-out infinite; margin: 0 auto; }
         @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .bird:active { transform: scale(0.9); animation: none; }
+        .float-num { position: absolute; font-weight: 800; font-size: 22px; color: #ffd700; pointer-events: none; animation: floatUp 0.9s ease-out forwards; text-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-70px); } }
         .energy-bar { background: rgba(255,255,255,0.08); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 15px; }
         .energy-fill { background: linear-gradient(90deg, #ffd700, #ff9800); height: 100%; transition: width 0.3s; }
         .energy-text { font-size: 12px; color: #aaa; text-align: center; margin-top: 6px; font-weight: bold; }
@@ -48,14 +51,14 @@
         .aviary-info { flex: 1; }
         .aviary-title { font-size: 14px; font-weight: bold; }
         .aviary-stats { font-size: 11px; color: #aaa; margin-top: 2px; }
-        
+
         .wheel-container { text-align: center; padding: 20px 0; }
         .wheel-icon { font-size: 100px; transition: transform 3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .task-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
         .task-info { flex: 1; }
         .task-title { font-size: 13px; font-weight: bold; }
         .task-progress { font-size: 11px; color: #aaa; margin-top: 4px; }
-        
+
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .shop-item { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 6px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
         .shop-item .icon { font-size: 32px; }
@@ -70,6 +73,13 @@
         .lb-user { flex: 1; margin-left: 8px; font-family: monospace; font-size: 12px; }
         .lb-value { font-weight: 700; color: #ffd700; }
 
+        .ach-item { display: flex; align-items: center; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 12px; margin-bottom: 6px; }
+        .ach-item.done { background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3); }
+        .ach-icon { font-size: 20px; margin-right: 10px; }
+        .ach-info { flex: 1; }
+        .ach-title { font-size: 13px; font-weight: bold; }
+        .ach-desc { font-size: 11px; color: #aaa; margin-top: 2px; }
+
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(26, 18, 43, 0.95); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 10px 0 15px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; max-width: 440px; margin: 0 auto; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; font-size: 10px; cursor: pointer; transition: color 0.2s; }
         .nav-item.active { color: #ffd700; }
@@ -79,7 +89,7 @@
         .modal.active { display: flex; }
         .modal-box { background: linear-gradient(135deg, #1e1533, #0f0a1e); border-radius: 20px; padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(255,215,0,0.2); text-align: center; }
         .modal-box input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 13px; margin: 10px 0; font-family: inherit; }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; padding: 12px 24px; border-radius: 30px; font-weight: 700; z-index: 3000; transition: transform 0.4s; box-shadow: 0 8px 24px rgba(76,175,80,0.5); font-size: 14px; text-align: center; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; padding: 12px 24px; border-radius: 30px; font-weight: 700; z-index: 3000; transition: transform 0.4s; box-shadow: 0 8px 24px rgba(76,175,80,0.5); font-size: 14px; text-align: center; max-width: 90%; }
         .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
@@ -101,8 +111,11 @@
                 </div>
             </div>
             <div class="card" style="text-align:center;">
-                <div class="bird" id="main-bird" onclick="tapBird()">🐔</div>
-                <div style="font-size:16px; font-weight:bold; margin-top:10px;">Курица</div>
+                <div class="bird-zone">
+                    <div class="bird" id="main-bird" onclick="tapBird(event)">🐔</div>
+                </div>
+                <div style="font-size:16px; font-weight:bold; margin-top:10px;" id="bird-label">Курица</div>
+                <div style="font-size:11px; color:#ffd700; margin-top:4px;">💪 <span id="tap-power">+1</span> за тап</div>
                 <div class="energy-bar"><div class="energy-fill" id="energy-fill" style="width:100%"></div></div>
                 <div class="energy-text"><span id="energy-text">60/60</span> энергии</div>
             </div>
@@ -122,6 +135,10 @@
 
         <!-- 3. ИВЕНТЫ -->
         <div id="tab-events" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">🎁 Ежедневный бонус</div>
+                <button class="btn btn-gold" id="daily-btn" onclick="claimDaily()">🎁 Забрать бонус</button>
+            </div>
             <div class="card">
                 <div class="section-title">
                     <span>🎡 Колесо Фортуны</span>
@@ -181,6 +198,10 @@
                 <div class="section-title" style="margin-top:14px;">🐔 Топ по птицам</div>
                 <div id="lb-birds"></div>
             </div>
+            <div class="card">
+                <div class="section-title">🏅 Достижения</div>
+                <div id="ach-list"></div>
+            </div>
         </div>
 
         <div class="bottom-nav">
@@ -208,13 +229,15 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); tg.ready();
-        
+
         // ⚠️ ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ
         const API = "https://pernatiubiznes.mitrasa355.workers.dev";
-        const BOT_USERNAME = "Pernatiu_biznes_bot"; 
-        const BLOCK_ID = "54253"; 
+        const BOT_USERNAME = "Pernatiu_biznes_bot";
+        const BLOCK_ID = "54253"; // Adsgram blockId
         // ==========================================
 
+        const initData = tg.initData || "";
+        const hasAuth = !!initData;
         const userId = tg.initDataUnsafe?.user?.id || "guest";
         const MIN_FEATHERS = 100;
 
@@ -224,155 +247,204 @@
             goose: { name: "🦢 Гусь", priceS: 25000, priceF: 500, income: 200, feedCost: 100 }
         };
 
-        let userData = { 
-            balance: 0, feathers: 0, energy: 60, birds: [], 
-            tasks: { taps: 0, birdsBought: 0, adsWatched: 0, claimed: [] } 
-        }; 
-        let lastSync = 0;
+        const ACH_DEFS = [
+            { id: "first_tap", title: "Первый тап", desc: "Сделай первый тап" },
+            { id: "tap_1k", title: "Тысячник", desc: "Сделай 1000 тапов" },
+            { id: "tap_10k", title: "Неутомимый", desc: "Сделай 10 000 тапов" },
+            { id: "birds_5", title: "Начинающий фермер", desc: "Купи 5 птиц" },
+            { id: "birds_25", title: "Птицевод", desc: "Купи 25 птиц" },
+            { id: "sueta_10k", title: "Богач", desc: "Заработай 10 000 суеты" },
+            { id: "sueta_1m", title: "Магнат", desc: "Заработай 1 000 000 суеты" },
+            { id: "ref_1", title: "Первый друг", desc: "Пригласи 1 друга" },
+            { id: "ref_5", title: "Душа компании", desc: "Пригласи 5 друзей" },
+            { id: "spin_10", title: "Счастливчик", desc: "Крути колесо 10 раз" },
+            { id: "feed_10", title: "Заботливый", desc: "Покорми птиц 10 раз" },
+            { id: "daily_7", title: "Постоянство", desc: "Заходи 7 дней подряд" }
+        ];
+
+        let userData = {
+            balance: 0, feathers: 0, energy: 60, birds: [],
+            tasks: { taps: 0, birdsBought: 0, adsWatched: 0, claimed: [] },
+            achievements: [], dailyStreak: 0, lastDailyBonus: ""
+        };
+        let pendingTaps = 0;
+        let flushTimer = null;
+        let toastTimer = null;
 
         function showToast(text) {
             const t = document.getElementById('toast');
             t.innerHTML = text; t.className = 'toast show';
-            setTimeout(() => t.className = 'toast', 3000);
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.className = 'toast', 3000);
         }
         function setStatus(id, text, cls) {
             const el = document.getElementById(id);
-            if(el) { el.textContent = text; el.className = cls || ''; }
+            if (el) { el.textContent = text; el.className = cls || ''; }
         }
 
-        async function loadFromServer() {
+        async function api(path, body = {}) {
             try {
-                const r = await fetch(API + "/balance?user=" + userId);
-                if (!r.ok) throw new Error("Server error");
-                const data = await r.json();
-                if (data && data.balance !== undefined) { userData = data; }
-                updateUI();
-            } catch (e) { console.log("Load error:", e); }
+                const r = await fetch(API + path, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ initData, ...body })
+                });
+                return await r.json();
+            } catch (e) {
+                return { ok: false, error: "Ошибка сети" };
+            }
+        }
+        function fail(res) { if (res && res.error) tg.showAlert(res.error); }
+
+        function handleNewAchievements(list) {
+            if (!list || !list.length) return;
+            list.forEach(a => {
+                const r = (a.rewardS ? "+" + a.rewardS + "🪙" : "") + (a.rewardF ? " +" + a.rewardF + "🪶" : "");
+                showToast(`🏅 Достижение: ${a.title}${r ? " " + r : ""}`);
+            });
         }
 
-        async function saveToServer() {
-            userData.userName = tg.initDataUnsafe?.user?.first_name || "Игрок";
-            userData.username = tg.initDataUnsafe?.user?.username || "";
-            try {
-                await fetch(API + "/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(userData) });
-                lastSync = Date.now();
-            } catch (e) {}
+        async function sync() {
+            if (!hasAuth) return;
+            const res = await api("/state");
+            if (!res || !res.ok) {
+                if (res && res.error === "banned") tg.showAlert("🚫 Вы заблокированы");
+                return;
+            }
+            userData = res.user;
+            if (res.offline && res.offline.earned > 0) {
+                showToast(`🌙 Пока тебя не было: +${res.offline.earned}🪙 за ${res.offline.hours} ч`);
+            }
+            handleNewAchievements(res.newAchievements);
+            updateUI();
         }
 
         function calcBirdIncome(bird) {
             const base = BIRDS[bird.type]?.income || 0;
             const now = Date.now();
             const ageDays = (now - bird.birth) / (1000 * 60 * 60 * 24);
-            let ageMult = Math.max(0.2, 1 - (ageDays * 0.005));
+            const ageMult = Math.max(0.2, 1 - (ageDays * 0.005));
             const hoursHungry = (now - bird.lastFed) / (1000 * 60 * 60);
             let hungerMult = 1.0;
             if (hoursHungry > 24) hungerMult = 0.2;
             else if (hoursHungry > 12) hungerMult = 0.5;
             return { income: base * ageMult * hungerMult, ageDays, hunger: hoursHungry };
         }
-
         function calculateTotalIncome() {
-            if(!userData.birds || !Array.isArray(userData.birds)) return 0;
-            return userData.birds.reduce((sum, bird) => sum + calcBirdIncome(bird).income, 0);
+            if (!userData.birds || !Array.isArray(userData.birds)) return 0;
+            return userData.birds.reduce((sum, b) => sum + calcBirdIncome(b).income, 0);
         }
-
         function calcMaxEnergy() {
             let max = 60;
-            if(userData.birds && Array.isArray(userData.birds)) {
-                max += userData.birds.filter(b=>b.type==='chicken').length * 2;
-                max += userData.birds.filter(b=>b.type==='duck').length * 10;
-                max += userData.birds.filter(b=>b.type==='goose').length * 40;
+            if (userData.birds && Array.isArray(userData.birds)) {
+                max += userData.birds.filter(b => b.type === 'chicken').length * 2;
+                max += userData.birds.filter(b => b.type === 'duck').length * 10;
+                max += userData.birds.filter(b => b.type === 'goose').length * 40;
             }
             return max;
         }
-
+        function currentTapPower() {
+            const n = (userData.birds || []).length;
+            return Math.min(20, 1 + Math.floor(n / 10));
+        }
         function calcFeedCost() {
-            if(!userData.birds || !Array.isArray(userData.birds)) return 0;
+            if (!userData.birds || !Array.isArray(userData.birds)) return 0;
             return userData.birds.reduce((sum, b) => sum + (BIRDS[b.type]?.feedCost || 0), 0);
         }
 
         function updateUI() {
             document.getElementById('balance').textContent = Math.floor(userData.balance || 0).toLocaleString('ru-RU');
             document.getElementById('feathers').textContent = Math.floor(userData.feathers || 0);
-            
+
             const maxE = calcMaxEnergy();
             const safeEnergy = isNaN(userData.energy) ? 0 : (userData.energy || 0);
             const enPct = Math.min(100, (safeEnergy / maxE) * 100);
             document.getElementById('energy-fill').style.width = enPct + '%';
             document.getElementById('energy-text').textContent = Math.floor(safeEnergy) + '/' + maxE;
-            
+            document.getElementById('tap-power').textContent = '+' + currentTapPower();
             document.getElementById('income').textContent = '+' + Math.floor(calculateTotalIncome()) + '/час';
 
-            // Логика кнопки кормления
+            // Главная птица = лучшая из купленных
+            const types = new Set((userData.birds || []).map(b => b.type));
+            let mb = { emoji: '🐔', label: 'Курица' };
+            if (types.has('goose')) mb = { emoji: '🦢', label: 'Гусь' };
+            else if (types.has('duck')) mb = { emoji: '🦆', label: 'Утка' };
+            document.getElementById('main-bird').textContent = mb.emoji;
+            document.getElementById('bird-label').textContent = mb.label;
+
+            // Кнопка кормления
             const feedBtn = document.getElementById('feedBtn');
-            if (userData.birds && userData.birds.length > 0 && userData.birds[0].lastFed) {
-                const hoursSinceFed = (Date.now() - userData.birds[0].lastFed) / (1000 * 60 * 60);
-                if (hoursSinceFed < 6) {
-                    feedBtn.disabled = true;
-                    feedBtn.innerHTML = `🍎 Птицы сыты (${Math.ceil(6 - hoursSinceFed)} ч.)`;
-                } else {
-                    feedBtn.disabled = false;
-                    feedBtn.innerHTML = `🍎 Покормить птиц (<span id="feed-cost">${calcFeedCost()}</span> 🪙)`;
-                }
-            } else {
+            const cost = calcFeedCost();
+            if ((userData.birds || []).length === 0) {
                 feedBtn.disabled = true;
                 feedBtn.innerHTML = `🍎 Нет птиц`;
+            } else {
+                const left = 6 * 3600 * 1000 - (Date.now() - (userData.lastFedAt || 0));
+                if (left > 0) {
+                    feedBtn.disabled = true;
+                    const h = Math.floor(left / 3600000), m = Math.floor((left % 3600000) / 60000);
+                    feedBtn.innerHTML = `🍎 Птицы сыты (${h}ч ${m}м)`;
+                } else {
+                    feedBtn.disabled = false;
+                    feedBtn.innerHTML = `🍎 Покормить птиц (<span id="feed-cost">${cost}</span> 🪙)`;
+                }
             }
-            
+
+            updateDailyButton();
             renderAviary();
             renderTasks();
             renderReferrals();
-            loadLeaderboard();
-            updateWheelButtons(); // Обновляем таймеры колеса
+            renderAchievements();
+            updateWheelButtons();
+        }
+
+        function updateDailyButton() {
+            const btn = document.getElementById('daily-btn');
+            if (!btn) return;
+            const today = new Date().toISOString().split('T')[0];
+            if (userData.lastDailyBonus === today) {
+                btn.disabled = true;
+                btn.innerHTML = `✅ Бонус получен (стрик ${userData.dailyStreak || 0} дн.)`;
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = `🎁 Забрать бонус (стрик ${userData.dailyStreak || 0} дн.)`;
+            }
         }
 
         function updateWheelButtons() {
             const freeBtn = document.getElementById('spin-free-btn');
             const adBtn = document.getElementById('spin-ad-btn');
             const now = Date.now();
-
-            // Бесплатный спин (24 часа)
-            const freeDiff = now - (userData.lastFreeSpin || 0);
-            const freeLeft = 24 * 60 * 60 * 1000 - freeDiff;
+            const freeLeft = 24 * 60 * 60 * 1000 - (now - (userData.lastFreeSpin || 0));
             if (freeLeft > 0) {
                 freeBtn.disabled = true;
                 const h = Math.floor(freeLeft / 3600000);
                 const m = Math.floor((freeLeft % 3600000) / 60000);
                 freeBtn.innerHTML = `⏳ Бесплатный спин (${h}ч ${m}м)`;
-            } else {
-                freeBtn.disabled = false;
-                freeBtn.innerHTML = `🎁 Бесплатный спин`;
-            }
+            } else { freeBtn.disabled = false; freeBtn.innerHTML = `🎁 Бесплатный спин`; }
 
-            // Спин за рекламу (1 час)
-            const adDiff = now - (userData.lastPaidSpin || 0);
-            const adLeft = 60 * 60 * 1000 - adDiff;
+            const adLeft = 60 * 60 * 1000 - (now - (userData.lastPaidSpin || 0));
             if (adLeft > 0) {
                 adBtn.disabled = true;
                 const m = Math.floor(adLeft / 60000);
                 adBtn.innerHTML = `⏳ Крутить за рекламу (${m}м)`;
-            } else {
-                adBtn.disabled = false;
-                adBtn.innerHTML = `📺 Крутить за рекламу`;
-            }
+            } else { adBtn.disabled = false; adBtn.innerHTML = `📺 Крутить за рекламу`; }
         }
 
         function showWheelInfo() {
             tg.showAlert("🎡 Призы колеса фортуны:\n\n🪙 100-500 суеты — 40%\n🪶 1-3 перьев — 30%\n🪙 1000-2000 суеты — 20%\n💎 Джекпот (5000 суеты + 10 перьев) — 10%");
         }
 
-        // ... (остальные функции renderAviary, renderTasks, renderLB, switchTab, tapBird, buyBird, feedBirds, spinWheel, claimTask, copyRefLink, openWithdraw, submitWithdraw, watchAd остаются без изменений)
-
         function renderAviary() {
             const list = document.getElementById('aviary-list');
-            if(!userData.birds || !Array.isArray(userData.birds)) userData.birds = [];
+            if (!userData.birds || !Array.isArray(userData.birds)) userData.birds = [];
             document.getElementById('birds-count').textContent = userData.birds.length;
             if (userData.birds.length === 0) {
                 list.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">У тебя пока нет птиц.</div>';
                 return;
             }
             let html = '';
-            [...userData.birds].sort((a,b) => a.type.localeCompare(b.type)).forEach(bird => {
+            [...userData.birds].sort((a, b) => a.type.localeCompare(b.type)).forEach(bird => {
                 const info = BIRDS[bird.type];
                 const stats = calcBirdIncome(bird);
                 let statusClass = 'aviary-item';
@@ -395,7 +467,6 @@
         function renderTasks() {
             const container = document.getElementById('tasks-list');
             if (!userData.tasks) userData.tasks = { taps: 0, birdsBought: 0, adsWatched: 0, claimed: [] };
-            
             const tasksDef = [
                 { id: 'taps', title: 'Сделать 500 тапов', curr: userData.tasks.taps || 0, max: 500, reward: '+150 🪙 +1 🪶' },
                 { id: 'birds', title: 'Купить 3 птицы', curr: userData.tasks.birdsBought || 0, max: 3, reward: '+300 🪙 +1 🪶' },
@@ -420,40 +491,52 @@
         }
 
         function renderReferrals() {
-            if(!document.getElementById('ref-link')) return;
+            if (!document.getElementById('ref-link')) return;
             document.getElementById('ref-link').textContent = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
             const count = userData.referrals ? userData.referrals.length : 0;
             document.getElementById('ref-stats').innerHTML = `👥 Приглашено: <b>${count}</b><br>💰 Заработано: <b>${userData.refBonus || 0}</b> суеты`;
         }
 
+        function renderAchievements() {
+            const el = document.getElementById('ach-list');
+            if (!el) return;
+            const earned = new Set(userData.achievements || []);
+            const html = `<div style="font-size:12px;color:#aaa;margin-bottom:8px;">Получено: ${earned.size} / ${ACH_DEFS.length}</div>` +
+                ACH_DEFS.map(a => {
+                    const ok = earned.has(a.id);
+                    return `<div class="ach-item ${ok ? 'done' : ''}">
+                        <div class="ach-icon">${ok ? '✅' : '🔒'}</div>
+                        <div class="ach-info"><div class="ach-title">${a.title}</div><div class="ach-desc">${a.desc}</div></div>
+                    </div>`;
+                }).join('');
+            el.innerHTML = html;
+        }
+
         async function loadLeaderboard() {
-            if(!document.getElementById('lb-sueta')) return;
-            const rewards = [50, 30, 20, 5, 5, 5, 5, 5, 5, 5];
+            if (!document.getElementById('lb-sueta')) return;
             try {
                 const [r1, r2] = await Promise.all([
                     fetch(API + "/leaderboard?type=sueta").then(r => r.json()),
                     fetch(API + "/leaderboard?type=birds").then(r => r.json())
                 ]);
-                document.getElementById('lb-sueta').innerHTML = renderLB(r1, rewards, v => v + " суеты");
-                document.getElementById('lb-birds').innerHTML = renderLB(r2, rewards, v => v + " птиц");
+                document.getElementById('lb-sueta').innerHTML = renderLB(r1, v => v + " суеты");
+                document.getElementById('lb-birds').innerHTML = renderLB(r2, v => v + " птиц");
             } catch (e) { console.log(e); }
         }
 
-        function renderLB(arr, rewards, fmt) {
+        function renderLB(arr, fmt) {
             if (!arr || !arr.length) return '<p style="color:#888;font-size:13px;">Пока никого нет</p>';
-            const medals = ['🥇','🥈','🥉'];
+            const medals = ['🥇', '🥈', '🥉'];
             let html = '';
             arr.forEach((row, i) => {
                 const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
                 const isMe = String(row.userId) === String(userId);
                 const medal = medals[i] || (i + 1);
-                const reward = rewards[i] || 0;
                 const displayName = isMe ? 'Ты' : (row.username ? '@' + row.username : (row.userName || 'Игрок'));
                 html += `<div class="leaderboard-row ${isMe ? 'me' : ''}">
                     <div class="rank ${rankClass}">${medal}</div>
                     <div class="lb-user">${displayName}</div>
                     <div class="lb-value">${fmt(row.value)}</div>
-                    <div style="font-size:10px; color:#ce93d8; margin-left:6px;">+${reward}🪶</div>
                 </div>`;
             });
             return html;
@@ -464,45 +547,76 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabId).style.display = 'block';
             document.getElementById('nav-' + tabId).classList.add('active');
-            if(tabId === 'events') renderTasks();
-            if(tabId === 'bank') loadLeaderboard();
+            if (tabId === 'events') renderTasks();
+            if (tabId === 'bank') loadLeaderboard();
         }
 
-        function tapBird() {
-            if (userData.energy <= 0) { tg.showAlert('Энергия закончилась! Жди восстановления.'); return; }
+        // ---------- ТАПЫ (пакетная отправка на сервер) ----------
+        function tapBird(event) {
+            if (!hasAuth) return tg.showAlert('Открой игру через Telegram');
+            if (Math.floor(userData.energy || 0) <= 0) { tg.showAlert('Энергия закончилась! Жди восстановления.'); return; }
+            const tp = currentTapPower();
             userData.energy -= 1;
-            userData.balance += 1;
+            userData.balance += tp;
             userData.totalTaps = (userData.totalTaps || 0) + 1;
-            userData.weeklySueta = (userData.weeklySueta || 0) + 1;
-            if (userData.tasks) userData.tasks.taps = (userData.tasks.taps || 0) + 1;
-            
-            updateUI();
+            pendingTaps++;
+            spawnFloat('+' + tp, event);
             tg.HapticFeedback?.impactOccurred('light');
-            if(userData.tasks && userData.tasks.taps % 10 === 0) renderTasks();
+            updateUI();
+            scheduleFlush();
         }
 
+        function spawnFloat(text, event) {
+            const zone = document.querySelector('.bird-zone');
+            if (!zone) return;
+            const rect = zone.getBoundingClientRect();
+            const x = event && event.clientX ? event.clientX - rect.left : rect.width / 2;
+            const y = event && event.clientY ? event.clientY - rect.top : 40;
+            const el = document.createElement('div');
+            el.className = 'float-num';
+            el.textContent = text;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            zone.appendChild(el);
+            setTimeout(() => el.remove(), 900);
+        }
+
+        function scheduleFlush() {
+            if (flushTimer) return;
+            flushTimer = setTimeout(() => { flushTimer = null; flushTaps(); }, 1000);
+        }
+
+        async function flushTaps() {
+            if (pendingTaps <= 0) return;
+            const count = pendingTaps;
+            pendingTaps = 0;
+            const res = await api("/tap", { count });
+            if (res && res.ok) {
+                userData = res.user;
+                handleNewAchievements(res.newAchievements);
+                updateUI();
+            }
+        }
+
+        // ---------- ДЕЙСТВИЯ ----------
         async function buyBird(type, currency) {
-            try {
-                const r = await fetch(API + "/buy_bird", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, type, currency }) });
-                if(r.ok) { userData = await r.json(); showToast(`Куплено: ${BIRDS[type].name}`); updateUI(); tg.HapticFeedback?.impactOccurred('medium'); } 
-                else { tg.showAlert((await r.json()).error); }
-            } catch(e) { tg.showAlert('Ошибка сети'); }
+            const res = await api("/buy_bird", { type, currency });
+            if (res && res.ok) {
+                userData = res.user;
+                showToast(`Куплено: ${BIRDS[type].name}`);
+                handleNewAchievements(res.newAchievements);
+                updateUI(); tg.HapticFeedback?.impactOccurred('medium');
+            } else fail(res);
         }
 
         async function feedBirds() {
-            const cost = calcFeedCost();
-            if (cost === 0) return tg.showAlert('Нет птиц');
-            if (userData.balance < cost) return tg.showAlert('Не хватает суеты!');
-            try {
-                const r = await fetch(API + "/feed", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
-                const res = await r.json();
-                if (res.ok) {
-                    userData.balance = res.balance;
-                    userData.birds.forEach(b => b.lastFed = Date.now());
-                    showToast(`🍎 Птицы накормлены!`);
-                    updateUI(); saveToServer();
-                } else { tg.showAlert(res.error); }
-            } catch(e) { tg.showAlert('Ошибка сети'); }
+            const res = await api("/feed");
+            if (res && res.ok) {
+                userData = res.user;
+                showToast('🍎 Птицы накормлены!');
+                handleNewAchievements(res.newAchievements);
+                updateUI();
+            } else fail(res);
         }
 
         async function spinWheel(type) {
@@ -514,97 +628,130 @@
 
             if (type === 'ad') {
                 if (!AdController) { tg.showAlert('Реклама не загружена'); btn.disabled = false; return; }
-                try { await AdController.show(); } 
-                catch(e) { btn.disabled = false; icon.style.transform = 'rotate(0)'; return; }
+                try { await AdController.show(); }
+                catch (e) { btn.disabled = false; icon.style.transform = 'rotate(0)'; return; }
             }
 
-            try {
-                const r = await fetch(API + "/spin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, type }) });
-                const res = await r.json();
-                setTimeout(() => {
-                    if(res.ok) { userData = res.data; showToast(`🎉 Выигрыш: ${res.prize}!`); updateUI(); } 
-                    else { tg.showAlert(res.error); }
-                    btn.disabled = false; icon.style.transition = 'none'; icon.style.transform = 'rotate(0)';
-                    updateWheelButtons();
-                }, 3000);
-            } catch(e) { btn.disabled = false; icon.style.transition = 'none'; icon.style.transform = 'rotate(0)'; }
+            const res = await api("/spin", { type });
+            setTimeout(() => {
+                if (res && res.ok) {
+                    userData = res.user;
+                    showToast(`🎉 Выигрыш: ${res.prize}!`);
+                    handleNewAchievements(res.newAchievements);
+                    updateUI();
+                } else fail(res);
+                btn.disabled = false;
+                icon.style.transition = 'none';
+                icon.style.transform = 'rotate(0)';
+                updateWheelButtons();
+            }, 3000);
         }
 
         async function claimTask(taskId) {
-            try {
-                const r = await fetch(API + "/claim_task", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, taskId }) });
-                const res = await r.json();
-                if(res.ok) {
-                    userData.balance += res.rewardS; userData.feathers += res.rewardF;
-                    userData.tasks.claimed.push(taskId);
-                    showToast(`✅ Задание! +${res.rewardS}🪙 +${res.rewardF}🪶`);
-                    updateUI(); saveToServer();
-                } else { tg.showAlert(res.error); }
-            } catch(e) { tg.showAlert('Ошибка сети'); }
+            const res = await api("/claim_task", { taskId });
+            if (res && res.ok) {
+                userData = res.user;
+                showToast(`✅ Задание! +${res.rewardS}🪙 +${res.rewardF}🪶`);
+                handleNewAchievements(res.newAchievements);
+                updateUI();
+            } else fail(res);
         }
 
-        function copyRefLink() { navigator.clipboard.writeText(`https://t.me/${BOT_USERNAME}?start=ref_${userId}`).then(() => showToast('📋 Скопировано!')); }
+        async function claimDaily() {
+            const res = await api("/daily");
+            if (res && res.ok) {
+                userData = res.user;
+                const extra = res.rewardF ? ` +${res.rewardF}🪶` : '';
+                showToast(`🎁 Ежедневный бонус: +${res.rewardS}🪙${extra} (стрик ${res.streak})`);
+                handleNewAchievements(res.newAchievements);
+                updateUI();
+            } else fail(res);
+        }
+
+        function copyRefLink() {
+            navigator.clipboard.writeText(`https://t.me/${BOT_USERNAME}?start=ref_${userId}`).then(() => showToast('📋 Скопировано!'));
+        }
 
         function openWithdraw() {
-            if (userData.feathers < MIN_FEATHERS) return tg.showAlert('Минимум ' + MIN_FEATHERS + ' перьев');
+            if (Math.floor(userData.feathers || 0) < MIN_FEATHERS) return tg.showAlert('Минимум ' + MIN_FEATHERS + ' перьев');
             document.getElementById('withdrawModal').classList.add('active');
         }
         function closeWithdraw() { document.getElementById('withdrawModal').classList.remove('active'); }
+
         async function submitWithdraw() {
             const wallet = document.getElementById('wd-wallet').value.trim();
-            if (!wallet || wallet.length < 40) return setStatus('wd-status', '⚠️ Проверь адрес', 'error');
-            document.getElementById('wd-submit').disabled = true;
+            if (!/^(UQ|EQ)[A-Za-z0-9_-]{40,64}$/.test(wallet) && !/^0:[0-9a-fA-F]{64}$/.test(wallet)) {
+                return setStatus('wd-status', '⚠️ Некорректный адрес (UQ... или EQ...)', 'error');
+            }
+            const btn = document.getElementById('wd-submit');
+            btn.disabled = true;
             setStatus('wd-status', 'Отправка...', '');
-            try {
-                const r = await fetch(API + "/withdraw", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, wallet, feathers: Math.floor(userData.feathers) }) });
-                const res = await r.json();
-                if (res.ok) { setStatus('wd-status', '✅ Заявка создана!', 'saved'); userData.feathers = 0; updateUI(); saveToServer(); setTimeout(closeWithdraw, 2000); } 
-                else { setStatus('wd-status', res.error, 'error'); }
-            } catch (e) { setStatus('wd-status', '⚠️ Нет связи', 'error'); }
-            finally { document.getElementById('wd-submit').disabled = false; }
+            const res = await api("/withdraw", { wallet, feathers: Math.floor(userData.feathers || 0) });
+            if (res && res.ok) {
+                userData = res.user;
+                setStatus('wd-status', `✅ Заявка создана (${res.amountTon} TON)!`, 'saved');
+                updateUI();
+                setTimeout(closeWithdraw, 2500);
+            } else {
+                setStatus('wd-status', res ? res.error : 'Ошибка', 'error');
+                if (res && res.error) tg.showAlert(res.error);
+            }
+            btn.disabled = false;
         }
 
+        // ---------- РЕКЛАМА ----------
         let AdController = null;
         try { if (window.Adsgram) AdController = window.Adsgram.init({ blockId: BLOCK_ID }); } catch (e) {}
+
         async function watchAd() {
             if (!AdController) return tg.showAlert('Реклама не загрузилась');
-            document.getElementById('adBtn').disabled = true;
+            const btn = document.getElementById('adBtn');
+            btn.disabled = true;
             try {
                 await AdController.show();
-                userData.balance += 80; userData.feathers += 2;
-                userData.weeklySueta = (userData.weeklySueta || 0) + 80;
-                if(userData.tasks) userData.tasks.adsWatched = (userData.tasks.adsWatched || 0) + 1;
-                updateUI(); saveToServer(); showToast('📺 +80🪙 +2🪶');
+                const res = await api("/ad_reward");
+                if (res && res.ok) {
+                    userData = res.user;
+                    showToast('📺 +80🪙 +2🪶');
+                    handleNewAchievements(res.newAchievements);
+                    updateUI();
+                } else fail(res);
             } catch (e) { showToast('Реклама не показалась'); }
-            finally { document.getElementById('adBtn').disabled = false; }
+            finally { btn.disabled = false; }
         }
 
+        // ---------- ФОНОВЫЕ ОБНОВЛЕНИЯ ----------
         setInterval(() => {
-            const now = Date.now();
+            // локальная регенерация энергии для плавности (сервер — источник истины)
             if (userData.energyUpdatedAt) {
-                const minsPassed = Math.floor((now - userData.energyUpdatedAt) / 1000 / 60);
-                if (minsPassed > 0) {
-                    userData.energy = Math.min(calcMaxEnergy(), (userData.energy||0) + minsPassed);
-                    userData.energyUpdatedAt = now;
+                const mins = (Date.now() - userData.energyUpdatedAt) / 60000;
+                if (mins >= 1) {
+                    const max = calcMaxEnergy();
+                    userData.energy = Math.min(max, Math.floor((userData.energy || 0) + mins));
+                    userData.energyUpdatedAt = Date.now();
                 }
             }
-            const inc = calculateTotalIncome();
-            if (inc > 0) userData.balance += inc / 3600;
             updateUI();
         }, 1000);
 
-        setInterval(() => { if (Date.now() - lastSync > 25000) saveToServer(); }, 30000);
+        setInterval(() => { sync(); }, 30000);
+
+        function flushOnExit() {
+            if (pendingTaps <= 0) return;
+            const count = pendingTaps;
+            pendingTaps = 0;
+            fetch(API + "/tap", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData, count }), keepalive: true });
+        }
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushOnExit(); });
+        window.addEventListener('beforeunload', flushOnExit);
 
         (async () => {
-            await loadFromServer();
-            await saveToServer();
-            renderTasks();
+            if (!hasAuth) {
+                showToast('⚠️ Открой игру через Telegram');
+                return;
+            }
+            await sync();
         })();
-
-        window.addEventListener('beforeunload', () => {
-            const blob = new Blob([JSON.stringify(userData)], { type: 'application/json' });
-            navigator.sendBeacon(API + "/update", blob);
-        });
     </script>
 </body>
 </html>
