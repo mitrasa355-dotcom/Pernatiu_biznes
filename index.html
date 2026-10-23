@@ -8,63 +8,96 @@
     <script src="https://sdk.adsgram.ai/js/sdk.min.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(ellipse at top, #2d1b4e 0%, #0f0a1e 60%); color: #fff; margin: 0; padding: 12px 12px 90px; min-height: 100vh; overflow-x: hidden; }
-        .container { max-width: 440px; margin: 0 auto; }
+        html, body { height: 100%; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(ellipse at 20% 0%, #3a1f6e 0%, #17102f 45%, #0a0716 100%); color: #fff; margin: 0; padding: 12px 12px 96px; min-height: 100vh; overflow-x: hidden; position: relative; }
+        body::before, body::after { content: ''; position: fixed; border-radius: 50%; filter: blur(90px); opacity: .35; z-index: 0; pointer-events: none; }
+        body::before { width: 340px; height: 340px; background: #7c4dff; top: -100px; left: -80px; animation: drift 18s ease-in-out infinite; }
+        body::after { width: 300px; height: 300px; background: #00c9a7; bottom: -80px; right: -60px; animation: drift 24s ease-in-out infinite reverse; }
+        @keyframes drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(46px, 30px); } }
+        .container { max-width: 440px; margin: 0 auto; position: relative; z-index: 1; }
 
         .header { text-align: center; margin-bottom: 12px; }
-        .header h1 { font-size: 22px; margin: 0; background: linear-gradient(90deg, #ffd700, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .card { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
-        .section-title { font-size: 13px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center;}
+        .header h1 { font-size: 23px; margin: 0 0 2px; background: linear-gradient(90deg, #ffd700, #ff8f00, #ffd700); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
+        @keyframes shine { to { background-position: 200% center; } }
+        .header .sub { font-size: 12px; color: #9aa; }
+
+        .card { background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.09); backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+        .section-title { font-size: 12px; font-weight: 800; color: #b7b0cc; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center; }
         .info-icon { cursor: pointer; font-size: 16px; color: #ffd700; }
 
         .top-wallets { display: flex; gap: 8px; margin-bottom: 12px; }
-        .wallet { flex: 1; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,152,0,0.05)); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.2); }
-        .wallet.feather { background: linear-gradient(135deg, rgba(156,39,176,0.2), rgba(103,58,183,0.08)); border-color: rgba(156,39,176,0.3); }
-        .wallet-label { font-size: 11px; color: #bbb; letter-spacing: 1px; text-transform: uppercase; }
+        .wallet { flex: 1; background: linear-gradient(135deg, rgba(255,215,0,0.16), rgba(255,152,0,0.05)); border-radius: 16px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.22); }
+        .wallet.feather { background: linear-gradient(135deg, rgba(156,39,176,0.22), rgba(103,58,183,0.08)); border-color: rgba(156,39,176,0.34); }
+        .wallet-label { font-size: 10px; color: #c9c2db; letter-spacing: 1px; text-transform: uppercase; }
         .wallet-value { font-size: 22px; font-weight: 800; color: #ffd700; margin-top: 2px; }
-        .wallet.feather .wallet-value { color: #ce93d8; }
-        .income-badge { display: block; font-size: 11px; color: #4CAF50; margin-top: 4px; font-weight: 600; }
+        .wallet.feather .wallet-value { color: #d79ef0; }
+        .income-badge { display: block; font-size: 11px; color: #69e07b; margin-top: 4px; font-weight: 700; }
 
-        .btn { display: block; width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; margin-bottom: 8px; transition: transform 0.08s; font-family: inherit; }
+        .btn { display: block; width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; border: none; margin-bottom: 8px; transition: transform 0.08s, box-shadow 0.2s; font-family: inherit; letter-spacing: .2px; }
         .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.5; background: #333 !important; color: #888 !important; box-shadow: none !important;}
-        .btn-primary { background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; }
-        .btn-gold { background: linear-gradient(135deg, #ffd700, #ff9800); color: #1a1a2e; }
+        .btn:disabled { opacity: 0.45; background: #2a2438 !important; color: #777 !important; box-shadow: none !important; }
+        .btn-primary { background: linear-gradient(135deg, #4CAF50, #2e7d32); color: #fff; box-shadow: 0 6px 18px rgba(76,175,80,0.35); }
+        .btn-gold { background: linear-gradient(135deg, #ffd700, #ff8f00); color: #1a1020; box-shadow: 0 6px 18px rgba(255,180,0,0.35); }
         .btn-purple { background: linear-gradient(135deg, #9c27b0, #673ab7); color: #fff; }
-        .btn-withdraw { background: linear-gradient(135deg, #ff5722, #d32f2f); color: #fff; }
-        .btn-blue { background: linear-gradient(135deg, #2196F3, #1976D2); color: #fff; }
+        .btn-withdraw { background: linear-gradient(135deg, #ff5722, #c62828); color: #fff; }
+        .btn-blue { background: linear-gradient(135deg, #2196F3, #1565c0); color: #fff; }
+        .btn-danger { background: linear-gradient(135deg, #e53935, #b71c1c); color: #fff; }
 
-        .bird-zone { position: relative; }
-        .bird { font-size: 90px; cursor: pointer; user-select: none; display: inline-block; transition: transform 0.08s; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4)); animation: bob 2.5s ease-in-out infinite; margin: 0 auto; }
-        @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .bird:active { transform: scale(0.9); animation: none; }
-        .float-num { position: absolute; font-weight: 800; font-size: 22px; color: #ffd700; pointer-events: none; animation: floatUp 0.9s ease-out forwards; text-shadow: 0 2px 6px rgba(0,0,0,0.5); }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-70px); } }
-        .energy-bar { background: rgba(255,255,255,0.08); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 15px; }
-        .energy-fill { background: linear-gradient(90deg, #ffd700, #ff9800); height: 100%; transition: width 0.3s; }
-        .energy-text { font-size: 12px; color: #aaa; text-align: center; margin-top: 6px; font-weight: bold; }
+        .bird-zone { position: relative; padding: 6px 0 2px; }
+        .bird { font-size: 96px; cursor: pointer; user-select: none; display: inline-block; transition: transform 0.07s; filter: drop-shadow(0 12px 26px rgba(0,0,0,0.5)); animation: bob 2.6s ease-in-out infinite; margin: 0 auto; }
+        @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .bird:active { transform: scale(0.88); animation: none; }
+        .ground { width: 120px; height: 16px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,0.45), transparent 70%); margin: 6px auto 0; }
+        .float-num { position: absolute; font-weight: 800; font-size: 24px; color: #ffd700; pointer-events: none; animation: floatUp 0.9s ease-out forwards; text-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.3); } }
+        .energy-bar { background: rgba(255,255,255,0.08); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 14px; }
+        .energy-fill { background: linear-gradient(90deg, #ffd700, #ff8f00); height: 100%; transition: width 0.3s; }
+        .energy-text { font-size: 12px; color: #a99; text-align: center; margin-top: 6px; font-weight: 700; }
+
+        .egg-row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; }
+        .egg-ico { font-size: 26px; margin-right: 10px; }
+        .egg-info { flex: 1; }
+        .egg-title { font-size: 13px; font-weight: 700; }
+        .egg-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+        .egg-bar { background: rgba(255,255,255,0.08); border-radius: 6px; height: 6px; overflow: hidden; margin-top: 6px; }
+        .egg-fill { background: linear-gradient(90deg, #ffb300, #ff8f00); height: 100%; transition: width 0.4s; }
+        .egg-actions { display: flex; gap: 6px; margin-left: 8px; }
+        .mini-btn { width: 38px; height: 38px; border-radius: 10px; border: none; font-size: 17px; cursor: pointer; font-weight: 800; }
+        .mini-btn.gold { background: linear-gradient(135deg, #ffd700, #ff8f00); }
+        .mini-btn.blue { background: linear-gradient(135deg, #2196F3, #1565c0); }
+
+        .filter-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .filter-btn { flex: 1; min-width: 64px; padding: 8px 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #ccc; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .filter-btn.active { background: linear-gradient(135deg, #ffd700, #ff8f00); color: #1a1020; border-color: transparent; }
+
+        .market-row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; }
+        .market-ico { font-size: 26px; margin-right: 10px; }
+        .market-info { flex: 1; }
+        .market-title { font-size: 13px; font-weight: 700; }
+        .market-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
 
         .aviary-item { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid #4CAF50; }
         .aviary-item.hungry { border-left-color: #ff9800; }
         .aviary-item.starving { border-left-color: #f44336; }
         .aviary-icon { font-size: 32px; margin-right: 12px; }
         .aviary-info { flex: 1; }
-        .aviary-title { font-size: 14px; font-weight: bold; }
+        .aviary-title { font-size: 14px; font-weight: 700; }
         .aviary-stats { font-size: 11px; color: #aaa; margin-top: 2px; }
 
         .wheel-container { text-align: center; padding: 20px 0; }
         .wheel-icon { font-size: 100px; transition: transform 3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .task-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
         .task-info { flex: 1; }
-        .task-title { font-size: 13px; font-weight: bold; }
+        .task-title { font-size: 13px; font-weight: 700; }
         .task-progress { font-size: 11px; color: #aaa; margin-top: 4px; }
 
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .shop-item { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 6px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
-        .shop-item .icon { font-size: 32px; }
-        .shop-item .name { font-size: 11px; color: #ccc; margin-top: 2px; }
-        .shop-item .price-s { font-size: 11px; color: #ffd700; font-weight: 700; margin-top: 4px; cursor: pointer; padding: 4px; border-radius: 6px; background: rgba(255,215,0,0.1); }
-        .shop-item .price-f { font-size: 11px; color: #ce93d8; font-weight: 700; margin-top: 3px; cursor: pointer; padding: 4px; border-radius: 6px; background: rgba(156,39,176,0.15); }
+        .shop-item { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 12px 6px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        .shop-item .icon { font-size: 34px; }
+        .shop-item .name { font-size: 11px; color: #ddd; margin-top: 2px; font-weight: 700; }
+        .shop-item .stat { font-size: 10px; color: #9a9; margin-top: 3px; }
+        .shop-item .price-s { font-size: 11px; color: #ffd700; font-weight: 700; margin-top: 5px; cursor: pointer; padding: 5px; border-radius: 6px; background: rgba(255,215,0,0.12); }
+        .shop-item .price-f { font-size: 11px; color: #d79ef0; font-weight: 700; margin-top: 3px; cursor: pointer; padding: 5px; border-radius: 6px; background: rgba(156,39,176,0.18); }
 
         .leaderboard-row { display: flex; align-items: center; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); margin-bottom: 6px; font-size: 13px; }
         .leaderboard-row.me { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
@@ -77,25 +110,29 @@
         .ach-item.done { background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3); }
         .ach-icon { font-size: 20px; margin-right: 10px; }
         .ach-info { flex: 1; }
-        .ach-title { font-size: 13px; font-weight: bold; }
+        .ach-title { font-size: 13px; font-weight: 700; }
         .ach-desc { font-size: 11px; color: #aaa; margin-top: 2px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(26, 18, 43, 0.95); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 10px 0 15px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; max-width: 440px; margin: 0 auto; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; font-size: 10px; cursor: pointer; transition: color 0.2s; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(22, 15, 38, 0.96); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 8px 0 14px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; max-width: 440px; margin: 0 auto; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #7d7; color: #8b839c; font-size: 9px; cursor: pointer; transition: color 0.2s; flex: 1; }
         .nav-item.active { color: #ffd700; }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        .nav-icon { font-size: 21px; margin-bottom: 3px; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
         .modal.active { display: flex; }
-        .modal-box { background: linear-gradient(135deg, #1e1533, #0f0a1e); border-radius: 20px; padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(255,215,0,0.2); text-align: center; }
-        .modal-box input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 13px; margin: 10px 0; font-family: inherit; }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #4CAF50, #388E3C); color: #fff; padding: 12px 24px; border-radius: 30px; font-weight: 700; z-index: 3000; transition: transform 0.4s; box-shadow: 0 8px 24px rgba(76,175,80,0.5); font-size: 14px; text-align: center; max-width: 90%; }
+        .modal-box { background: linear-gradient(135deg, #241a3d, #0f0a1e); border-radius: 20px; padding: 24px; width: 100%; max-width: 360px; border: 1px solid rgba(255,215,0,0.2); text-align: center; }
+        .modal-box input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; margin: 10px 0; font-family: inherit; }
+        .modal-box label { display: block; font-size: 12px; color: #aaa; text-align: left; margin-top: 8px; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-120px); background: linear-gradient(135deg, #43a047, #2e7d32); color: #fff; padding: 13px 24px; border-radius: 30px; font-weight: 700; z-index: 3000; transition: transform 0.4s; box-shadow: 0 10px 28px rgba(0,0,0,0.4); font-size: 14px; text-align: center; max-width: 90%; }
         .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header"><h1>🐔 Пернатый Бизнес</h1></div>
+        <div class="header">
+            <h1>🐔 Пернатый Бизнес</h1>
+            <div class="sub" id="player-name">Ферма</div>
+        </div>
 
         <!-- 1. ФЕРМА -->
         <div id="tab-farm" class="tab-content">
@@ -113,11 +150,16 @@
             <div class="card" style="text-align:center;">
                 <div class="bird-zone">
                     <div class="bird" id="main-bird" onclick="tapBird(event)">🐔</div>
+                    <div class="ground"></div>
                 </div>
-                <div style="font-size:16px; font-weight:bold; margin-top:10px;" id="bird-label">Курица</div>
-                <div style="font-size:11px; color:#ffd700; margin-top:4px;">💪 <span id="tap-power">+1</span> за тап</div>
+                <div style="font-size:16px; font-weight:800; margin-top:6px;" id="bird-label">Курица</div>
+                <div style="font-size:11px; color:#ffd700; margin-top:3px;">💪 <span id="tap-power">+1</span> за тап</div>
                 <div class="energy-bar"><div class="energy-fill" id="energy-fill" style="width:100%"></div></div>
                 <div class="energy-text"><span id="energy-text">60/60</span> энергии</div>
+            </div>
+            <div class="card">
+                <div class="section-title">🥚 Продукция (склад)</div>
+                <div id="eggs-bar"></div>
             </div>
             <div class="card">
                 <button class="btn btn-primary" id="adBtn" onclick="watchAd()">📺 Смотреть рекламу (+80 суеты +2 🪶)</button>
@@ -131,9 +173,62 @@
                 <div class="section-title">🐔 Твои птицы (<span id="birds-count">0</span>)</div>
                 <div id="aviary-list"></div>
             </div>
+            <div class="card">
+                <div class="section-title">🥚 Производство яиц</div>
+                <div id="eggs-bar-aviary"></div>
+            </div>
         </div>
 
-        <!-- 3. ИВЕНТЫ -->
+        <!-- 3. МАГАЗИН -->
+        <div id="tab-shop" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">🛒 Купить птиц</div>
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div class="icon">🐔</div><div class="name">Курица</div>
+                        <div class="stat">+10/ч • 🥚1/ч</div>
+                        <div class="price-s" onclick="buyBird('chicken','sueta')">500 🪙</div>
+                        <div class="price-f" onclick="buyBird('chicken','feather')">10 🪶</div>
+                    </div>
+                    <div class="shop-item">
+                        <div class="icon">🦆</div><div class="name">Утка</div>
+                        <div class="stat">+50/ч • 🥚2/ч</div>
+                        <div class="price-s" onclick="buyBird('duck','sueta')">5000 🪙</div>
+                        <div class="price-f" onclick="buyBird('duck','feather')">100 🪶</div>
+                    </div>
+                    <div class="shop-item">
+                        <div class="icon">🦢</div><div class="name">Гусь</div>
+                        <div class="stat">+200/ч • 🥚4/ч</div>
+                        <div class="price-s" onclick="buyBird('goose','sueta')">25000 🪙</div>
+                        <div class="price-f" onclick="buyBird('goose','feather')">500 🪶</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. РЫНОК -->
+        <div id="tab-market" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="section-title">🏪 Продать яйца скупщику (NPC)</div>
+                <div id="npc-list"></div>
+            </div>
+            <div class="card">
+                <div class="section-title">📈 Мои лоты на рынке</div>
+                <div id="my-list"></div>
+            </div>
+            <div class="card">
+                <div class="section-title">🛒 Лоты игроков</div>
+                <div class="filter-row" id="market-filters">
+                    <button class="filter-btn active" onclick="setMarketFilter('')">Все</button>
+                    <button class="filter-btn" onclick="setMarketFilter('chicken')">🥚 Куриные</button>
+                    <button class="filter-btn" onclick="setMarketFilter('duck')">🥚 Утиные</button>
+                    <button class="filter-btn" onclick="setMarketFilter('goose')">🪺 Гусиные</button>
+                </div>
+                <div id="market-list"></div>
+            </div>
+        </div>
+
+        <!-- 5. ИВЕНТЫ -->
         <div id="tab-events" class="tab-content" style="display:none;">
             <div class="card">
                 <div class="section-title">🎁 Ежедневный бонус</div>
@@ -154,31 +249,7 @@
             </div>
         </div>
 
-        <!-- 4. МАГАЗИН -->
-        <div id="tab-shop" class="tab-content" style="display:none;">
-            <div class="card">
-                <div class="section-title">🛒 Купить птиц</div>
-                <div class="shop-grid">
-                    <div class="shop-item">
-                        <div class="icon">🐔</div><div class="name">Курица</div>
-                        <div class="price-s" onclick="buyBird('chicken','sueta')">500 🪙</div>
-                        <div class="price-f" onclick="buyBird('chicken','feather')">10 🪶</div>
-                    </div>
-                    <div class="shop-item">
-                        <div class="icon">🦆</div><div class="name">Утка</div>
-                        <div class="price-s" onclick="buyBird('duck','sueta')">5000 🪙</div>
-                        <div class="price-f" onclick="buyBird('duck','feather')">100 🪶</div>
-                    </div>
-                    <div class="shop-item">
-                        <div class="icon">🦢</div><div class="name">Гусь</div>
-                        <div class="price-s" onclick="buyBird('goose','sueta')">25000 🪙</div>
-                        <div class="price-f" onclick="buyBird('goose','feather')">500 🪶</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. БАНК -->
+        <!-- 6. БАНК -->
         <div id="tab-bank" class="tab-content" style="display:none;">
             <div class="card">
                 <div class="section-title">💸 Вывод средств</div>
@@ -207,8 +278,9 @@
         <div class="bottom-nav">
             <div class="nav-item active" id="nav-farm" onclick="switchTab('farm')"><div class="nav-icon">🏠</div>Ферма</div>
             <div class="nav-item" id="nav-aviary" onclick="switchTab('aviary')"><div class="nav-icon">🐔</div>Птичник</div>
-            <div class="nav-item" id="nav-events" onclick="switchTab('events')"><div class="nav-icon">🎡</div>Ивенты</div>
             <div class="nav-item" id="nav-shop" onclick="switchTab('shop')"><div class="nav-icon">🛒</div>Магазин</div>
+            <div class="nav-item" id="nav-market" onclick="switchTab('market')"><div class="nav-icon">🏪</div>Рынок</div>
+            <div class="nav-item" id="nav-events" onclick="switchTab('events')"><div class="nav-icon">🎡</div>Ивенты</div>
             <div class="nav-item" id="nav-bank" onclick="switchTab('bank')"><div class="nav-icon">🏦</div>Банк</div>
         </div>
     </div>
@@ -224,6 +296,21 @@
             <div id="wd-status" style="font-size:12px; margin-top:10px;"></div>
         </div>
     </div>
+
+    <div class="modal" id="listModal">
+        <div class="modal-box">
+            <h2 id="lm-title">Продать на рынке</h2>
+            <div id="lm-have" style="font-size:13px;color:#ccc;"></div>
+            <label>Количество яиц</label>
+            <input type="number" id="lm-qty" min="1" placeholder="Сколько?" />
+            <label>Цена за штуку (суета)</label>
+            <input type="number" id="lm-price" min="1" placeholder="Например: 5" />
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button class="btn" style="background:#444;" onclick="closeListModal()">Отмена</button>
+                <button class="btn btn-gold" onclick="listOnMarket()">📈 Выставить</button>
+            </div>
+        </div>
+    </div>
     <div class="toast" id="toast"></div>
 
     <script>
@@ -233,7 +320,7 @@
         // ⚠️ ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ
         const API = "https://pernatiubiznes.mitrasa355.workers.dev";
         const BOT_USERNAME = "Pernatiu_biznes_bot";
-        const BLOCK_ID = "54253"; // Adsgram blockId
+        const BLOCK_ID = "54253";
         // ==========================================
 
         const initData = tg.initData || "";
@@ -242,9 +329,15 @@
         const MIN_FEATHERS = 100;
 
         const BIRDS = {
-            chicken: { name: "🐔 Курица", priceS: 500, priceF: 10, income: 10, feedCost: 5 },
-            duck: { name: "🦆 Утка", priceS: 5000, priceF: 100, income: 50, feedCost: 25 },
-            goose: { name: "🦢 Гусь", priceS: 25000, priceF: 500, income: 200, feedCost: 100 }
+            chicken: { name: "🐔 Курица", priceS: 500, priceF: 10, income: 10, feedCost: 5, eggRate: 1 },
+            duck: { name: "🦆 Утка", priceS: 5000, priceF: 100, income: 50, feedCost: 25, eggRate: 2 },
+            goose: { name: "🦢 Гусь", priceS: 25000, priceF: 500, income: 200, feedCost: 100, eggRate: 4 }
+        };
+        const EGG_TYPES = ["chicken", "duck", "goose"];
+        const EGG_META = {
+            chicken: { name: "Куриное", emoji: "🥚", npc: 3, rate: 1 },
+            duck: { name: "Утиное", emoji: "🥚", npc: 12, rate: 2 },
+            goose: { name: "Гусиное", emoji: "🪺", npc: 45, rate: 4 }
         };
 
         const ACH_DEFS = [
@@ -253,8 +346,11 @@
             { id: "tap_10k", title: "Неутомимый", desc: "Сделай 10 000 тапов" },
             { id: "birds_5", title: "Начинающий фермер", desc: "Купи 5 птиц" },
             { id: "birds_25", title: "Птицевод", desc: "Купи 25 птиц" },
+            { id: "eggs_500", title: "Птицеферма", desc: "Собери 500 яиц" },
             { id: "sueta_10k", title: "Богач", desc: "Заработай 10 000 суеты" },
             { id: "sueta_1m", title: "Магнат", desc: "Заработай 1 000 000 суеты" },
+            { id: "trade_10", title: "Торговец", desc: "Продай 10 товаров на рынке" },
+            { id: "trade_50", title: "Магнат рынка", desc: "Продай 50 товаров на рынке" },
             { id: "ref_1", title: "Первый друг", desc: "Пригласи 1 друга" },
             { id: "ref_5", title: "Душа компании", desc: "Пригласи 5 друзей" },
             { id: "spin_10", title: "Счастливчик", desc: "Крути колесо 10 раз" },
@@ -265,11 +361,14 @@
         let userData = {
             balance: 0, feathers: 0, energy: 60, birds: [],
             tasks: { taps: 0, birdsBought: 0, adsWatched: 0, claimed: [] },
-            achievements: [], dailyStreak: 0, lastDailyBonus: ""
+            achievements: [], dailyStreak: 0, lastDailyBonus: "",
+            eggs: { chicken: 0, duck: 0, goose: 0 }
         };
         let pendingTaps = 0;
         let flushTimer = null;
         let toastTimer = null;
+        let marketFilter = "";
+        let listType = "chicken";
 
         function showToast(text) {
             const t = document.getElementById('toast');
@@ -281,6 +380,7 @@
             const el = document.getElementById(id);
             if (el) { el.textContent = text; el.className = cls || ''; }
         }
+        function fmt(n) { return Math.floor(n || 0).toLocaleString('ru-RU'); }
 
         async function api(path, body = {}) {
             try {
@@ -313,7 +413,7 @@
             }
             userData = res.user;
             if (res.offline && res.offline.earned > 0) {
-                showToast(`🌙 Пока тебя не было: +${res.offline.earned}🪙 за ${res.offline.hours} ч`);
+                showToast(`🌙 Пока тебя не было: +${fmt(res.offline.earned)}🪙 за ${res.offline.hours} ч`);
             }
             handleNewAchievements(res.newAchievements);
             updateUI();
@@ -351,20 +451,23 @@
             if (!userData.birds || !Array.isArray(userData.birds)) return 0;
             return userData.birds.reduce((sum, b) => sum + (BIRDS[b.type]?.feedCost || 0), 0);
         }
+        function siloCap(type) {
+            const count = (userData.birds || []).filter(b => b.type === type).length;
+            return 50 + count * 40;
+        }
 
         function updateUI() {
-            document.getElementById('balance').textContent = Math.floor(userData.balance || 0).toLocaleString('ru-RU');
-            document.getElementById('feathers').textContent = Math.floor(userData.feathers || 0);
+            document.getElementById('balance').textContent = fmt(userData.balance);
+            document.getElementById('feathers').textContent = fmt(userData.feathers);
+            document.getElementById('player-name').textContent = userData.userName || 'Ферма';
 
             const maxE = calcMaxEnergy();
             const safeEnergy = isNaN(userData.energy) ? 0 : (userData.energy || 0);
-            const enPct = Math.min(100, (safeEnergy / maxE) * 100);
-            document.getElementById('energy-fill').style.width = enPct + '%';
+            document.getElementById('energy-fill').style.width = Math.min(100, (safeEnergy / maxE) * 100) + '%';
             document.getElementById('energy-text').textContent = Math.floor(safeEnergy) + '/' + maxE;
             document.getElementById('tap-power').textContent = '+' + currentTapPower();
-            document.getElementById('income').textContent = '+' + Math.floor(calculateTotalIncome()) + '/час';
+            document.getElementById('income').textContent = '+' + fmt(calculateTotalIncome()) + '/час';
 
-            // Главная птица = лучшая из купленных
             const types = new Set((userData.birds || []).map(b => b.type));
             let mb = { emoji: '🐔', label: 'Курица' };
             if (types.has('goose')) mb = { emoji: '🦢', label: 'Гусь' };
@@ -372,7 +475,6 @@
             document.getElementById('main-bird').textContent = mb.emoji;
             document.getElementById('bird-label').textContent = mb.label;
 
-            // Кнопка кормления
             const feedBtn = document.getElementById('feedBtn');
             const cost = calcFeedCost();
             if ((userData.birds || []).length === 0) {
@@ -391,10 +493,12 @@
             }
 
             updateDailyButton();
+            renderEggsBar();
             renderAviary();
             renderTasks();
             renderReferrals();
             renderAchievements();
+            renderNpcList();
             updateWheelButtons();
         }
 
@@ -409,6 +513,49 @@
                 btn.disabled = false;
                 btn.innerHTML = `🎁 Забрать бонус (стрик ${userData.dailyStreak || 0} дн.)`;
             }
+        }
+
+        function renderEggsBar() {
+            const farm = document.getElementById('eggs-bar');
+            const av = document.getElementById('eggs-bar-aviary');
+            const html = EGG_TYPES.map(t => {
+                const meta = EGG_META[t];
+                const have = userData.eggs?.[t] || 0;
+                const cap = siloCap(t);
+                const count = (userData.birds || []).filter(b => b.type === t).length;
+                const rate = count * meta.rate;
+                return `<div class="egg-row">
+                    <div class="egg-ico">${meta.emoji}</div>
+                    <div class="egg-info">
+                        <div class="egg-title">${meta.name} яйцо</div>
+                        <div class="egg-sub">${fmt(have)} / ${cap} • ${rate > 0 ? '+' + rate : '0'}/час</div>
+                        <div class="egg-bar"><div class="egg-fill" style="width:${Math.min(100, have / cap * 100)}%"></div></div>
+                    </div>
+                    <div class="egg-actions">
+                        <button class="mini-btn gold" title="Продать NPC" onclick="sellNpc('${t}')">💰</button>
+                        <button class="mini-btn blue" title="На рынок" onclick="openListModal('${t}')">📈</button>
+                    </div>
+                </div>`;
+            }).join('');
+            if (farm) farm.innerHTML = html;
+            if (av) av.innerHTML = html;
+        }
+
+        function renderNpcList() {
+            const el = document.getElementById('npc-list');
+            if (!el) return;
+            el.innerHTML = EGG_TYPES.map(t => {
+                const meta = EGG_META[t];
+                const have = userData.eggs?.[t] || 0;
+                return `<div class="market-row">
+                    <div class="market-ico">${meta.emoji}</div>
+                    <div class="market-info">
+                        <div class="market-title">${meta.name} яйцо</div>
+                        <div class="market-sub">${fmt(have)} шт • ${meta.npc} 🪙/шт</div>
+                    </div>
+                    <button class="btn btn-gold" style="width:100px;padding:9px;margin:0;font-size:12px;" onclick="sellNpc('${t}')">Продать</button>
+                </div>`;
+            }).join('');
         }
 
         function updateWheelButtons() {
@@ -456,7 +603,7 @@
                     <div class="aviary-icon">${info.name.split(' ')[0]}</div>
                     <div class="aviary-info">
                         <div class="aviary-title">${info.name.split(' ')[1]} <span style="font-size:10px;color:#aaa;">(${Math.floor(stats.ageDays)} дн.)</span></div>
-                        <div class="aviary-stats">Доход: +${stats.income.toFixed(1)}/ч</div>
+                        <div class="aviary-stats">Доход: +${stats.income.toFixed(1)}/ч • 🥚 +${info.eggRate}/ч</div>
                         <div class="aviary-stats" style="color: ${stats.hunger > 12 ? '#ff9800' : '#4CAF50'}">${statusText}</div>
                     </div>
                 </div>`;
@@ -494,7 +641,7 @@
             if (!document.getElementById('ref-link')) return;
             document.getElementById('ref-link').textContent = `https://t.me/${BOT_USERNAME}?start=ref_${userId}`;
             const count = userData.referrals ? userData.referrals.length : 0;
-            document.getElementById('ref-stats').innerHTML = `👥 Приглашено: <b>${count}</b><br>💰 Заработано: <b>${userData.refBonus || 0}</b> суеты`;
+            document.getElementById('ref-stats').innerHTML = `👥 Приглашено: <b>${count}</b><br>💰 Заработано: <b>${fmt(userData.refBonus)}</b> суеты`;
         }
 
         function renderAchievements() {
@@ -524,7 +671,7 @@
             } catch (e) { console.log(e); }
         }
 
-        function renderLB(arr, fmt) {
+        function renderLB(arr, fmtv) {
             if (!arr || !arr.length) return '<p style="color:#888;font-size:13px;">Пока никого нет</p>';
             const medals = ['🥇', '🥈', '🥉'];
             let html = '';
@@ -536,7 +683,7 @@
                 html += `<div class="leaderboard-row ${isMe ? 'me' : ''}">
                     <div class="rank ${rankClass}">${medal}</div>
                     <div class="lb-user">${displayName}</div>
-                    <div class="lb-value">${fmt(row.value)}</div>
+                    <div class="lb-value">${fmtv(row.value)}</div>
                 </div>`;
             });
             return html;
@@ -549,9 +696,10 @@
             document.getElementById('nav-' + tabId).classList.add('active');
             if (tabId === 'events') renderTasks();
             if (tabId === 'bank') loadLeaderboard();
+            if (tabId === 'market') { loadMarket(); loadMyListings(); }
         }
 
-        // ---------- ТАПЫ (пакетная отправка на сервер) ----------
+        // ---------- ТАПЫ ----------
         function tapBird(event) {
             if (!hasAuth) return tg.showAlert('Открой игру через Telegram');
             if (Math.floor(userData.energy || 0) <= 0) { tg.showAlert('Энергия закончилась! Жди восстановления.'); return; }
@@ -699,6 +847,142 @@
             btn.disabled = false;
         }
 
+        // ---------- РЫНОК ----------
+        function expireIn(ts) {
+            const left = ts - Date.now();
+            if (left <= 0) return 'истёк';
+            const h = Math.floor(left / 3600000), m = Math.floor((left % 3600000) / 60000);
+            return h + 'ч ' + m + 'м';
+        }
+
+        async function sellNpc(type) {
+            const qty = userData.eggs?.[type] || 0;
+            if (qty <= 0) return tg.showAlert('Нет яиц для продажи');
+            const res = await api("/market/sell_npc", { type, qty });
+            if (res && res.ok) {
+                userData = res.user;
+                showToast(`💰 Продано за ${fmt(res.total)} 🪙`);
+                handleNewAchievements(res.newAchievements);
+                updateUI();
+            } else fail(res);
+        }
+
+        function openListModal(type) {
+            listType = type;
+            const meta = EGG_META[type];
+            const have = userData.eggs?.[type] || 0;
+            document.getElementById('lm-title').textContent = 'Продать на рынке: ' + meta.name;
+            document.getElementById('lm-have').textContent = 'На складе: ' + fmt(have) + ' шт';
+            document.getElementById('lm-qty').max = have;
+            document.getElementById('lm-qty').value = '';
+            document.getElementById('lm-price').value = '';
+            document.getElementById('listModal').classList.add('active');
+        }
+        function closeListModal() { document.getElementById('listModal').classList.remove('active'); }
+
+        async function listOnMarket() {
+            const qty = parseInt(document.getElementById('lm-qty').value || '0', 10);
+            const price = parseInt(document.getElementById('lm-price').value || '0', 10);
+            if (qty <= 0) return tg.showAlert('Укажи количество');
+            if (price < 1) return tg.showAlert('Укажи цену (суета за штуку)');
+            const res = await api("/market/sell", { type: listType, qty, price });
+            if (res && res.ok) {
+                userData = res.user;
+                showToast('📈 Лот выставлен на рынок!');
+                handleNewAchievements(res.newAchievements);
+                closeListModal();
+                updateUI(); loadMyListings(); loadMarket();
+            } else fail(res);
+        }
+
+        async function buyListing(id, qty) {
+            const res = await api("/market/buy", { id, qty });
+            if (res && res.ok) {
+                userData = res.user;
+                showToast(`🛒 Куплено ×${res.bought} за ${fmt(res.total)} 🪙`);
+                handleNewAchievements(res.newAchievements);
+                updateUI(); loadMarket(); loadMyListings();
+            } else fail(res);
+        }
+
+        async function cancelListing(id) {
+            const res = await api("/market/cancel", { id });
+            if (res && res.ok) {
+                userData = res.user;
+                showToast('📦 Лот снят, яйца возвращены');
+                handleNewAchievements(res.newAchievements);
+                updateUI(); loadMyListings(); loadMarket();
+            } else fail(res);
+        }
+
+        function setMarketFilter(type) {
+            marketFilter = type;
+            document.querySelectorAll('#market-filters .filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            loadMarket();
+        }
+
+        async function loadMarket() {
+            const el = document.getElementById('market-list');
+            if (!el) return;
+            el.innerHTML = '<div style="color:#888;text-align:center;padding:12px;">Загрузка...</div>';
+            try {
+                const r = await fetch(API + '/market' + (marketFilter ? '?type=' + marketFilter : ''));
+                const list = await r.json();
+                if (!list || !list.length) {
+                    el.innerHTML = '<div style="color:#888;text-align:center;padding:12px;">Лотов пока нет</div>';
+                    return;
+                }
+                el.innerHTML = list.map(l => {
+                    const meta = EGG_META[l.type];
+                    const isMine = String(l.sellerId) === String(userId);
+                    if (isMine) {
+                        return `<div class="market-row">
+                            <div class="market-ico">${meta.emoji}</div>
+                            <div class="market-info">
+                                <div class="market-title">${meta.name} ×${l.qty}</div>
+                                <div class="market-sub">Твой лот • ${l.price} 🪙/шт</div>
+                            </div>
+                        </div>`;
+                    }
+                    return `<div class="market-row">
+                        <div class="market-ico">${meta.emoji}</div>
+                        <div class="market-info">
+                            <div class="market-title">${meta.name} ×${l.qty}</div>
+                            <div class="market-sub">${l.sellerName || 'Игрок'} • ${l.price} 🪙/шт</div>
+                        </div>
+                        <button class="btn btn-blue" style="width:88px;padding:8px;margin:0;font-size:12px;" onclick="buyListing('${l.id}', ${l.qty})">Купить</button>
+                    </div>`;
+                }).join('');
+            } catch (e) { el.innerHTML = '<div style="color:#888;text-align:center;padding:12px;">Ошибка загрузки</div>'; }
+        }
+
+        async function loadMyListings() {
+            const el = document.getElementById('my-list');
+            if (!el) return;
+            const res = await api("/market/my");
+            if (res && res.ok) {
+                if (res.user) userData = res.user;
+                const list = res.listings || [];
+                if (!list.length) {
+                    el.innerHTML = '<div style="color:#888;text-align:center;padding:10px;">У тебя нет активных лотов</div>';
+                } else {
+                    el.innerHTML = list.map(l => {
+                        const meta = EGG_META[l.type];
+                        return `<div class="market-row">
+                            <div class="market-ico">${meta.emoji}</div>
+                            <div class="market-info">
+                                <div class="market-title">${meta.name} ×${l.qty}</div>
+                                <div class="market-sub">${l.price} 🪙/шт • ${expireIn(l.expiresAt)}</div>
+                            </div>
+                            <button class="btn btn-danger" style="width:80px;padding:8px;margin:0;font-size:12px;" onclick="cancelListing('${l.id}')">Снять</button>
+                        </div>`;
+                    }).join('');
+                }
+                updateUI();
+            }
+        }
+
         // ---------- РЕКЛАМА ----------
         let AdController = null;
         try { if (window.Adsgram) AdController = window.Adsgram.init({ blockId: BLOCK_ID }); } catch (e) {}
@@ -722,7 +1006,6 @@
 
         // ---------- ФОНОВЫЕ ОБНОВЛЕНИЯ ----------
         setInterval(() => {
-            // локальная регенерация энергии для плавности (сервер — источник истины)
             if (userData.energyUpdatedAt) {
                 const mins = (Date.now() - userData.energyUpdatedAt) / 60000;
                 if (mins >= 1) {
@@ -754,4 +1037,4 @@
         })();
     </script>
 </body>
-</html>
+                </html>
